@@ -80,6 +80,7 @@ app.get("/api/health", async (req, res) => {
                 success: false,
                 message: "Database connecting or disconnected",
                 hasMongoUri: Boolean(process.env.MONGO_URI),
+                maskedMongoUri: process.env.MONGO_URI ? process.env.MONGO_URI.replace(/:([^@:]+)@/, ":***@").substring(0, 45) + "..." : null,
                 hasJwtSecret: Boolean(process.env.JWT_SECRET),
                 readyState: mongoose.connection.readyState,
                 error: typeof connectDB.getLastError === "function" ? connectDB.getLastError() : null
