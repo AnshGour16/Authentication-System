@@ -17,3 +17,8 @@ logs
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Personal Study Notes & Guides
+interview_prep_guide.html
+*.pdf
+PROJECT_ARCHITECTURE_AND_INTERVIEW_GUIDE.*
