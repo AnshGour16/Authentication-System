@@ -7,7 +7,11 @@ if (!cached) {
 }
 
 const connectDB = async () => {
-    // Reuse existing connection if active
+    // 1. Instant zero-latency return if connection is already established
+    if (mongoose.connection.readyState === 1) {
+        return mongoose.connection;
+    }
+
     if (cached.conn && mongoose.connection.readyState === 1) {
         return cached.conn;
     }
@@ -22,8 +26,9 @@ const connectDB = async () => {
 
     if (!cached.promise) {
         const opts = {
-            serverSelectionTimeoutMS: 15000,
-            maxPoolSize: 10
+            serverSelectionTimeoutMS: 8000,
+            maxPoolSize: 10,
+            socketTimeoutMS: 45000
         };
 
         cached.promise = mongoose.connect(mongoURI.trim(), opts).then((mongooseInstance) => {
@@ -42,6 +47,7 @@ const connectDB = async () => {
         cached.conn = await cached.promise;
     } catch (err) {
         cached.promise = null;
+        cached.conn = null;
     }
 
     return cached.conn;

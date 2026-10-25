@@ -43,19 +43,17 @@ app.use("/api", apiLimiter);
 // Ensure MongoDB connection is ready for API calls
 app.use("/api", async (req, res, next) => {
     if (mongoose.connection.readyState !== 1) {
-        await connectDB();
+        try {
+            await connectDB();
+        } catch (e) {
+            // Handled below
+        }
     }
-    next();
-});
 
-// Serve static frontend files
-app.use(express.static(path.join(__dirname, "public")));
-
-// API Routes with Database Connection Guard
-app.use("/api/auth", async (req, res, next) => {
-    if (mongoose.connection.readyState !== 1) {
-        await connectDB();
+    if (req.path === "/health") {
+        return next();
     }
+
     if (mongoose.connection.readyState !== 1) {
         const dbError = typeof connectDB.getLastError === "function" ? connectDB.getLastError() : "Database disconnected";
         return res.status(503).json({
@@ -65,7 +63,13 @@ app.use("/api/auth", async (req, res, next) => {
         });
     }
     next();
-}, authRoutes);
+});
+
+// Serve static frontend files
+app.use(express.static(path.join(__dirname, "public")));
+
+// API Routes
+app.use("/api/auth", authRoutes);
 
 // Health check / DB Test Route
 app.get("/api/health", async (req, res) => {
