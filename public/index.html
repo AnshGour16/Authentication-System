@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuthX - Modern Authentication System</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Glow Effects -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Main Container -->
+    <main class="main-wrapper">
+        <!-- Auth Card -->
+        <div id="auth-card" class="auth-card">
+            
+            <!-- Brand Header -->
+            <div class="brand-header">
+                <div class="logo-badge">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <h1 class="brand-title">SecureAuth</h1>
+                <p class="brand-subtitle">Fast, secure & OTP-verified authentication</p>
+            </div>
+
+            <!-- View: Auth Tabs (Login / Register) -->
+            <div id="auth-forms-view" class="view-section active">
+                <div class="tab-switcher">
+                    <button type="button" class="tab-btn active" id="tab-login-btn">
+                        <i data-lucide="log-in"></i> Sign In
+                    </button>
+                    <button type="button" class="tab-btn" id="tab-register-btn">
+                        <i data-lucide="user-plus"></i> Sign Up
+                    </button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="login-form" class="form-content active" novalidate>
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="mail" class="input-icon"></i>
+                            <input type="email" id="login-email" placeholder="name@example.com" required autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="login-password">Password</label>
+                            <button type="button" id="open-forgot-btn" class="text-link">Forgot password?</button>
+                        </div>
+                        <div class="input-wrapper">
+                            <i data-lucide="lock" class="input-icon"></i>
+                            <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+                            <button type="button" class="toggle-password" data-target="login-password">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="login-submit-btn" class="btn btn-primary">
+                        <span>Sign In to Account</span>
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="register-form" class="form-content" novalidate>
+                    <div class="form-group">
+                        <label for="register-name">Full Name</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="user" class="input-icon"></i>
+                            <input type="text" id="register-name" placeholder="John Doe" required autocomplete="name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="mail" class="input-icon"></i>
+                            <input type="email" id="register-email" placeholder="name@example.com" required autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="lock" class="input-icon"></i>
+                            <input type="password" id="register-password" placeholder="Min. 6 characters" required autocomplete="new-password">
+                            <button type="button" class="toggle-password" data-target="register-password">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="check-circle-2" class="input-icon"></i>
+                            <input type="password" id="register-confirm-password" placeholder="Re-enter password" required autocomplete="new-password">
+                            <button type="button" class="toggle-password" data-target="register-confirm-password">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="register-submit-btn" class="btn btn-primary">
+                        <span>Create Account</span>
+                        <i data-lucide="user-check"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- View: Forgot Password (Multi-step) -->
+            <div id="forgot-view" class="view-section">
+                <!-- Step Indicator -->
+                <div class="step-progress">
+                    <div class="step-item active" id="step-dot-1">
+                        <span class="step-num">1</span>
+                        <span class="step-text">Email</span>
+                    </div>
+                    <div class="step-line" id="step-line-1"></div>
+                    <div class="step-item" id="step-dot-2">
+                        <span class="step-num">2</span>
+                        <span class="step-text">OTP</span>
+                    </div>
+                    <div class="step-line" id="step-line-2"></div>
+                    <div class="step-item" id="step-dot-3">
+                        <span class="step-num">3</span>
+                        <span class="step-text">Reset</span>
+                    </div>
+                </div>
+
+                <!-- STEP 1: Enter Email to get OTP -->
+                <div id="forgot-step-1" class="forgot-step active">
+                    <div class="section-desc">
+                        <h3>Reset your password</h3>
+                        <p>Enter your registered email address and we will send a 6-digit OTP code.</p>
+                    </div>
+
+                    <form id="forgot-email-form" novalidate>
+                        <div class="form-group">
+                            <label for="forgot-email">Registered Email</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="mail" class="input-icon"></i>
+                                <input type="email" id="forgot-email" placeholder="name@example.com" required>
+                            </div>
+                        </div>
+
+                        <div id="dev-otp-banner" class="dev-banner hidden">
+                            <i data-lucide="info"></i>
+                            <div class="dev-banner-text">
+                                <strong>Development OTP:</strong> <span id="dev-otp-code">------</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="send-otp-btn" class="btn btn-primary">
+                            <span>Send OTP Code</span>
+                            <i data-lucide="send"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- STEP 2: Enter OTP -->
+                <div id="forgot-step-2" class="forgot-step">
+                    <div class="section-desc">
+                        <h3>Verify OTP Code</h3>
+                        <p>Enter the 6-digit code sent to <strong id="display-otp-email" class="highlight-text"></strong></p>
+                    </div>
+
+                    <form id="verify-otp-form" novalidate>
+                        <div class="form-group">
+                            <label>6-Digit Security Code</label>
+                            <div class="otp-inputs-container">
+                                <input type="text" maxlength="1" class="otp-digit" data-idx="0" inputmode="numeric" autofocus>
+                                <input type="text" maxlength="1" class="otp-digit" data-idx="1" inputmode="numeric">
+                                <input type="text" maxlength="1" class="otp-digit" data-idx="2" inputmode="numeric">
+                                <input type="text" maxlength="1" class="otp-digit" data-idx="3" inputmode="numeric">
+                                <input type="text" maxlength="1" class="otp-digit" data-idx="4" inputmode="numeric">
+                                <input type="text" maxlength="1" class="otp-digit" data-idx="5" inputmode="numeric">
+                            </div>
+                        </div>
+
+                        <div class="resend-row">
+                            <span id="timer-text">Resend code in <strong id="timer-count">60s</strong></span>
+                            <button type="button" id="resend-otp-btn" class="text-link hidden">Resend Code</button>
+                        </div>
+
+                        <button type="submit" id="verify-otp-btn" class="btn btn-primary">
+                            <span>Verify Code</span>
+                            <i data-lucide="check"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- STEP 3: Set New Password -->
+                <div id="forgot-step-3" class="forgot-step">
+                    <div class="section-desc">
+                        <h3>Set New Password</h3>
+                        <p>Create a strong password of at least 6 characters.</p>
+                    </div>
+
+                    <form id="reset-password-form" novalidate>
+                        <div class="form-group">
+                            <label for="new-password">New Password</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="lock" class="input-icon"></i>
+                                <input type="password" id="new-password" placeholder="New strong password" required>
+                                <button type="button" class="toggle-password" data-target="new-password">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm-new-password">Confirm New Password</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="shield-check" class="input-icon"></i>
+                                <input type="password" id="confirm-new-password" placeholder="Confirm new password" required>
+                                <button type="button" class="toggle-password" data-target="confirm-new-password">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="reset-password-btn" class="btn btn-primary">
+                            <span>Update Password</span>
+                            <i data-lucide="check-circle-2"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Back to Sign In Link -->
+                <div class="back-link-wrapper">
+                    <button type="button" id="back-to-login-btn" class="back-link">
+                        <i data-lucide="arrow-left"></i> Back to Sign In
+                    </button>
+                </div>
+            </div>
+
+            <!-- View: User Dashboard (Logged in) -->
+            <div id="dashboard-view" class="view-section">
+                <div class="dashboard-header">
+                    <div class="avatar-circle" id="user-avatar">U</div>
+                    <h2 id="dash-user-name">Welcome Back!</h2>
+                    <p id="dash-user-email" class="user-email-badge">user@example.com</p>
+                </div>
+
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <span class="stat-label"><i data-lucide="key"></i> Auth Status</span>
+                        <span class="stat-value badge-success">Active Session (JWT)</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label"><i data-lucide="calendar"></i> Member Since</span>
+                        <span class="stat-value" id="dash-created-at">Just now</span>
+                    </div>
+                </div>
+
+                <div class="token-box">
+                    <div class="token-header">
+                        <span><i data-lucide="shield"></i> JWT Bearer Token</span>
+                        <button type="button" id="copy-token-btn" class="btn-copy">
+                            <i data-lucide="copy"></i> Copy
+                        </button>
+                    </div>
+                    <div class="token-preview" id="dash-token-preview">ey...</div>
+                </div>
+
+                <div class="dash-actions">
+                    <button type="button" id="test-protected-btn" class="btn btn-secondary">
+                        <i data-lucide="refresh-cw"></i> Test Protected Profile API
+                    </button>
+                    <button type="button" id="logout-btn" class="btn btn-danger">
+                        <i data-lucide="log-out"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
