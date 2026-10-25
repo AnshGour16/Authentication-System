@@ -1,9 +1,8 @@
 // =========================================================
 // STATE & CONFIG
 // =========================================================
-const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
-    ? '' 
-    : 'http://localhost:5000';
+// Use relative path so API calls work seamlessly both on localhost and production (Vercel)
+const API_BASE = '';
 
 let forgotState = {
     email: '',
