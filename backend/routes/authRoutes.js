@@ -8,15 +8,16 @@ const {
     getProfile 
 } = require("../controllers/authController");
 const authMiddleware = require("../middleware/authMiddleware");
+const { authLimiter, otpLimiter } = require("../middleware/rateLimiter");
 
 const router = express.Router();
 
-// Public Routes
-router.post("/register", register);
-router.post("/login", login);
-router.post("/forgot-password", forgotPassword);
-router.post("/verify-otp", verifyOtp);
-router.post("/reset-password", resetPassword);
+// Public Routes with Rate Limiting Protection
+router.post("/register", authLimiter, register);
+router.post("/login", authLimiter, login);
+router.post("/forgot-password", otpLimiter, forgotPassword);
+router.post("/verify-otp", otpLimiter, verifyOtp);
+router.post("/reset-password", otpLimiter, resetPassword);
 
 // Protected Route
 router.get("/profile", authMiddleware, getProfile);

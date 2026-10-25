@@ -1,23 +1,29 @@
 # 🔐 Full-Stack Authentication & OTP Reset System (MongoDB Atlas & Mongoose)
 
-A secure, high-performance, and responsive **Full-Stack Authentication System** built with **Node.js, Express, MongoDB Atlas (Mongoose ODM), JWT, Bcrypt, and Nodemailer**. Featuring a complete user lifecycle: Registration, Login, and a 3-Step OTP-based Password Reset with a glassmorphism UI and a full 31-test TDD automated testing suite.
+A secure, high-performance, and responsive **Full-Stack Authentication System** built with **Node.js, Express, MongoDB Atlas (Mongoose ODM), JWT, Bcrypt, and Nodemailer**. Featuring a complete user lifecycle: Registration, Login, and a 3-Step OTP-based Password Reset with a glassmorphism UI, comprehensive security hardening (Helmet, Rate Limiting, Brute-Force lockout), and a full 38-test TDD automated testing suite.
 
 ---
 
 ## 🌟 Key Features
 
-- **User Registration**: Real-time validation, duplicate email check, and salted password hashing using `bcrypt`.
-- **JWT Authentication**: Secure login issuing JSON Web Tokens (JWT) for stateless session management.
+- **User Registration**: Real-time validation, duplicate email check, max-length protection, and salted password hashing using `bcrypt`.
+- **JWT Authentication**: Secure login issuing JSON Web Tokens (JWT) for stateless session management with 24-hour expiration.
 - **Instant OTP Forgot Password Flow**:
   - Secure random 6-digit OTP generation with 10-minute Time-To-Live (TTL).
-  - **High-Speed Non-Blocking Email Dispatch**: Saved to MongoDB in `< 50ms` so the user UI transitions instantly to Step 2 without loading lag.
-  - **Connection Pooling**: Nodemailer SMTP connection pooling (`pool: true`) for rapid delivery to user inboxes.
+  - **High-Speed Direct SSL Email Delivery**: Configured via direct SSL (`smtp.gmail.com:465`) for fast transmission to user inboxes.
   - Includes a development console fallback if SMTP is not configured.
-- **Single-Use Replay Attack Defense**: OTP fields are wiped (`otp: null, otpExpiresAt: null`) immediately upon successful password reset.
+- **Enterprise-Grade Brute Force & Replay Defense**:
+  - **OTP Lockout**: Automatically tracks failed attempts and invalidates the OTP after 5 consecutive incorrect guesses.
+  - **Single-Use Replay Defense**: OTP fields are wiped immediately upon password reset.
+- **Security Hardening**:
+  - **Helmet HTTP Headers**: Custom Content Security Policy (CSP), clickjacking defense, nosniff, and cross-origin controls.
+  - **Rate Limiting**: Multi-tier rate limiting via `express-rate-limit` for General APIs (100 req/15m), Auth endpoints (30 req/15m), and OTP endpoints (10 req/15m).
+  - **NoSQL Injection Prevention**: Strict type-checking against operator injection payloads.
+  - **Payload Size Capping**: Limits request bodies to 20kb to prevent Denial of Service (DoS) memory exhaustion.
+  - **DOM XSS Defense**: Safe DOM text node construction in frontend toast notifications.
 - **Protected Profile Route**: JWT Bearer token authentication middleware with MongoDB ObjectId validation.
-- **Modern Mongoose ODM**: Schema-level validation, unique indexes, and automatic timestamps (`createdAt`, `updatedAt`).
 - **Glassmorphism Frontend UI**: Built-in responsive UI with animated toast notifications, password show/hide toggles, 6-digit auto-focusing OTP inputs, and a 60-second resend countdown timer.
-- **Complete TDD Test Suite**: 31 automated Unit and Integration tests using **Jest** and **Supertest** covering every route, middleware, model, and utility.
+- **Complete TDD Test Suite**: 38 automated Unit and Integration tests across 5 test suites using **Jest** and **Supertest**.
 
 ---
 
@@ -44,7 +50,8 @@ Authentication-Project/
 │   ├── controllers/
 │   │   └── authController.js  # Controller logic (Register, Login, OTP, Reset, Profile)
 │   ├── middleware/
-│   │   └── authMiddleware.js  # JWT Bearer token verification middleware
+│   │   ├── authMiddleware.js  # JWT Bearer token verification middleware
+│   │   └── rateLimiter.js     # Multi-tier express-rate-limit middleware
 │   ├── models/
 │   │   └── User.js            # Mongoose Schema & User model
 │   ├── public/                # Frontend static assets
@@ -54,7 +61,7 @@ Authentication-Project/
 │   ├── routes/
 │   │   └── authRoutes.js      # Public & protected authentication endpoints
 │   ├── tests/                 # TDD Automated Testing Suite
-│   │   ├── unit/              # Unit tests (authMiddleware, User model, sendEmail)
+│   │   ├── unit/              # Unit tests (authMiddleware, User model, sendEmail, rateLimiter)
 │   │   └── integration/       # End-to-end HTTP API integration tests
 │   ├── utils/
 │   │   └── sendEmail.js       # Pooled Nodemailer email sender utility
@@ -247,12 +254,17 @@ Once running, open your browser and navigate to:
 
 ## 🔒 Security Best Practices Implemented
 
-1. **Password Hashing**: Passwords are salted and hashed with `bcrypt` (10 rounds) before storage.
-2. **Replay Attack Defense**: OTP fields are wiped from MongoDB (`otp: null, otpExpiresAt: null`) immediately upon password update.
-3. **Time Expiration**: OTPs strictly expire in 10 minutes.
-4. **JWT Verification**: Protected endpoints validate tokens using `jsonwebtoken` and reject expired, forged, or malformed tokens.
-5. **ObjectId Validation**: Prevents CastError vulnerabilities by validating MongoDB ObjectIds before database lookups.
-6. **CORS Protected**: Configured via Express CORS middleware for secure cross-origin requests.
+1. **Password Hashing**: Passwords are salted and hashed with `bcrypt` (10 rounds) before storage. Length capped at 128 characters to eliminate ReDoS / CPU exhaustion.
+2. **Brute Force Defense & OTP Lockout**: Automatic attempt tracking locks out and wipes OTP after 5 consecutive failed verification attempts.
+3. **Single-Use Replay Attack Defense**: OTP fields are wiped from MongoDB (`otp: null, otpExpiresAt: null, otpAttempts: 0`) immediately upon password update.
+4. **Time Expiration**: OTPs strictly expire in 10 minutes.
+5. **Multi-Tier Rate Limiting**: `express-rate-limit` protects against DDoS and credential stuffing on auth and OTP routes.
+6. **HTTP Security Headers (Helmet)**: Strict CSP, framing restrictions (clickjacking protection), X-Content-Type-Options nosniff, and hiding `X-Powered-By`.
+7. **NoSQL Injection Prevention**: Strict type-checking rejects query operator injection payloads.
+8. **Request Body Size Capping**: Limits JSON payloads to 20kb to prevent memory exhaustion attacks.
+9. **JWT Verification**: Protected endpoints validate tokens using `jsonwebtoken` and reject expired, forged, or malformed tokens.
+10. **ObjectId Validation**: Prevents CastError vulnerabilities by validating MongoDB ObjectIds before database lookups.
+11. **DOM XSS Defense**: Safe DOM node creation for UI notifications.
 
 ---
 
@@ -260,14 +272,14 @@ Once running, open your browser and navigate to:
 
 ```text
 PASS tests/integration/authRoutes.test.js
+PASS tests/unit/rateLimiter.test.js
 PASS tests/unit/User.model.test.js
 PASS tests/unit/authMiddleware.test.js
 PASS tests/unit/sendEmail.test.js
 
-Test Suites: 4 passed, 4 total
-Tests:       31 passed, 31 total
+Test Suites: 5 passed, 5 total
+Tests:       38 passed, 38 total
 Snapshots:   0 total
-Time:        6.107 s
 Ran all test suites.
 ```
 

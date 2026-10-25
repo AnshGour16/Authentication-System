@@ -5,7 +5,8 @@ const userSchema = new mongoose.Schema(
         name: {
             type: String,
             required: [true, "Name is required"],
-            trim: true
+            trim: true,
+            maxlength: [100, "Name cannot exceed 100 characters"]
         },
         email: {
             type: String,
@@ -13,6 +14,7 @@ const userSchema = new mongoose.Schema(
             unique: true,
             lowercase: true,
             trim: true,
+            maxlength: [255, "Email cannot exceed 255 characters"],
             match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please provide a valid email address"]
         },
         password: {
@@ -27,6 +29,10 @@ const userSchema = new mongoose.Schema(
         otpExpiresAt: {
             type: Date,
             default: null
+        },
+        otpAttempts: {
+            type: Number,
+            default: 0
         }
     },
     {

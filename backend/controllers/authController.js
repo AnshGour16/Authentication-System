@@ -17,6 +17,36 @@ const register = async (req, res) => {
             });
         }
 
+        // Type checking to prevent NoSQL operator injection
+        if (typeof name !== "string" || typeof email !== "string" || typeof password !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid input types"
+            });
+        }
+
+        const trimmedName = name.trim();
+        if (trimmedName.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Name cannot be empty"
+            });
+        }
+
+        if (trimmedName.length > 100) {
+            return res.status(400).json({
+                success: false,
+                message: "Name cannot exceed 100 characters"
+            });
+        }
+
+        if (email.length > 255) {
+            return res.status(400).json({
+                success: false,
+                message: "Email cannot exceed 255 characters"
+            });
+        }
+
         // Email regex validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -30,6 +60,13 @@ const register = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Password must be at least 6 characters long"
+            });
+        }
+
+        if (password.length > 128) {
+            return res.status(400).json({
+                success: false,
+                message: "Password cannot exceed 128 characters"
             });
         }
 
@@ -49,7 +86,7 @@ const register = async (req, res) => {
 
         // Save new user in MongoDB
         const newUser = await User.create({
-            name: name.trim(),
+            name: trimmedName,
             email: normalizedEmail,
             password: hashedPassword
         });
@@ -64,7 +101,7 @@ const register = async (req, res) => {
         console.error("Register Error:", error);
         res.status(500).json({
             success: false,
-            message: error.message || "Internal Server Error"
+            message: "Internal Server Error"
         });
     }
 };
@@ -79,6 +116,21 @@ const login = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Email and password are required"
+            });
+        }
+
+        // Type checking to prevent NoSQL operator injection
+        if (typeof email !== "string" || typeof password !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid input types"
+            });
+        }
+
+        if (password.length > 128) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password"
             });
         }
 
@@ -152,6 +204,13 @@ const forgotPassword = async (req, res) => {
             });
         }
 
+        if (typeof email !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Valid email is required"
+            });
+        }
+
         const normalizedEmail = email.toLowerCase().trim();
         const user = await User.findOne({ email: normalizedEmail });
 
@@ -168,9 +227,10 @@ const forgotPassword = async (req, res) => {
         // Set expiry time (10 minutes from now)
         const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-        // Save OTP & expiry in MongoDB
+        // Save OTP & expiry in MongoDB and reset attempts
         user.otp = otp;
         user.otpExpiresAt = otpExpiresAt;
+        user.otpAttempts = 0;
         await user.save();
 
         // Send Email with OTP
@@ -200,13 +260,19 @@ const forgotPassword = async (req, res) => {
             });
         } catch (emailErr) {
             console.error("OTP Email Delivery Error:", emailErr.message || emailErr);
+            if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+                return res.status(500).json({
+                    success: false,
+                    message: "Failed to deliver OTP email. Please try again later."
+                });
+            }
         }
 
         res.status(200).json({
             success: true,
             message: "OTP sent successfully to your email",
             email: user.email,
-            // Convenience in dev mode when SMTP is not set
+            // Convenience in dev mode when SMTP is not configured
             devOtp: (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) ? otp : undefined
         });
 
@@ -231,6 +297,21 @@ const verifyOtp = async (req, res) => {
             });
         }
 
+        if (typeof email !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email format"
+            });
+        }
+
+        const cleanOtp = String(otp).trim();
+        if (!/^\d{6}$/.test(cleanOtp)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP code"
+            });
+        }
+
         const normalizedEmail = email.toLowerCase().trim();
         const user = await User.findOne({ email: normalizedEmail });
 
@@ -241,7 +322,20 @@ const verifyOtp = async (req, res) => {
             });
         }
 
-        if (!user.otp || user.otp !== otp.toString().trim()) {
+        // Check if OTP matches
+        if (!user.otp || user.otp !== cleanOtp) {
+            user.otpAttempts = (user.otpAttempts || 0) + 1;
+            if (user.otpAttempts >= 5) {
+                user.otp = null;
+                user.otpExpiresAt = null;
+                user.otpAttempts = 0;
+                await user.save();
+                return res.status(400).json({
+                    success: false,
+                    message: "Too many failed attempts. This OTP has been invalidated. Please request a new one."
+                });
+            }
+            await user.save();
             return res.status(400).json({
                 success: false,
                 message: "Invalid OTP code"
@@ -282,10 +376,32 @@ const resetPassword = async (req, res) => {
             });
         }
 
+        if (typeof email !== "string" || typeof newPassword !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid input types"
+            });
+        }
+
         if (newPassword.length < 6) {
             return res.status(400).json({
                 success: false,
                 message: "Password must be at least 6 characters long"
+            });
+        }
+
+        if (newPassword.length > 128) {
+            return res.status(400).json({
+                success: false,
+                message: "Password cannot exceed 128 characters"
+            });
+        }
+
+        const cleanOtp = String(otp).trim();
+        if (!/^\d{6}$/.test(cleanOtp)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP code"
             });
         }
 
@@ -300,7 +416,19 @@ const resetPassword = async (req, res) => {
         }
 
         // Validate OTP
-        if (!user.otp || user.otp !== otp.toString().trim()) {
+        if (!user.otp || user.otp !== cleanOtp) {
+            user.otpAttempts = (user.otpAttempts || 0) + 1;
+            if (user.otpAttempts >= 5) {
+                user.otp = null;
+                user.otpExpiresAt = null;
+                user.otpAttempts = 0;
+                await user.save();
+                return res.status(400).json({
+                    success: false,
+                    message: "Too many failed attempts. This OTP has been invalidated. Please request a new one."
+                });
+            }
+            await user.save();
             return res.status(400).json({
                 success: false,
                 message: "Invalid OTP code"
@@ -319,10 +447,11 @@ const resetPassword = async (req, res) => {
         // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Update password and clear OTP
+        // Update password and clear OTP & attempts
         user.password = hashedPassword;
         user.otp = null;
         user.otpExpiresAt = null;
+        user.otpAttempts = 0;
         await user.save();
 
         res.status(200).json({

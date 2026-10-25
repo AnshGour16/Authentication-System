@@ -3,8 +3,10 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const { apiLimiter } = require("./middleware/rateLimiter");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,10 +14,30 @@ const PORT = process.env.PORT || 5000;
 // Connect to MongoDB
 connectDB();
 
+// Security Headers (Helmet configured for fonts & icon CDN compatibility)
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'", "'unsafe-inline'", "https://unpkg.com"],
+                styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+                fontSrc: ["'self'", "https://fonts.gstatic.com"],
+                imgSrc: ["'self'", "data:"],
+                connectSrc: ["'self'"]
+            }
+        },
+        crossOriginEmbedderPolicy: false
+    })
+);
+
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "20kb" }));
+app.use(express.urlencoded({ extended: true, limit: "20kb" }));
+
+// General API Rate Limiting
+app.use("/api", apiLimiter);
 
 // Ensure MongoDB connection is ready (critical for serverless platforms like Vercel)
 app.use(async (req, res, next) => {

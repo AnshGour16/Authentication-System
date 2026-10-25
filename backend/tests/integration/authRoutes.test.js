@@ -253,4 +253,101 @@ describe("Integration Tests: Auth Routes (/api/auth)", () => {
             expect(newLogin.body.token).toBeDefined();
         });
     });
+
+    describe("7. Security Hardening & Edge Cases", () => {
+        it("should reject registration when name exceeds 100 characters", async () => {
+            const res = await request(app)
+                .post("/api/auth/register")
+                .send({
+                    name: "A".repeat(101),
+                    email: `overflow_${timestamp}@example.com`,
+                    password: "ValidPassword123!"
+                });
+
+            expect(res.statusCode).toBe(400);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe("Name cannot exceed 100 characters");
+        });
+
+        it("should reject registration when password exceeds 128 characters", async () => {
+            const res = await request(app)
+                .post("/api/auth/register")
+                .send({
+                    name: "Valid Name",
+                    email: `overflow_pass_${timestamp}@example.com`,
+                    password: "A".repeat(129)
+                });
+
+            expect(res.statusCode).toBe(400);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe("Password cannot exceed 128 characters");
+        });
+
+        it("should reject registration when input types are invalid (NoSQL injection prevention)", async () => {
+            const res = await request(app)
+                .post("/api/auth/register")
+                .send({
+                    name: { $gt: "" },
+                    email: `nosql_${timestamp}@example.com`,
+                    password: "ValidPassword123!"
+                });
+
+            expect(res.statusCode).toBe(400);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe("Invalid input types");
+        });
+
+        it("should reject login when input types are invalid (NoSQL injection prevention)", async () => {
+            const res = await request(app)
+                .post("/api/auth/login")
+                .send({
+                    email: { $gt: "" },
+                    password: "ValidPassword123!"
+                });
+
+            expect(res.statusCode).toBe(400);
+            expect(res.body.success).toBe(false);
+            expect(res.body.message).toBe("Invalid input types");
+        });
+
+        it("should invalidate OTP after 5 consecutive failed verification attempts (Brute Force Defense)", async () => {
+            // Request fresh OTP
+            await request(app)
+                .post("/api/auth/forgot-password")
+                .send({ email: testUser.email });
+
+            const userWithOtp = await User.findOne({ email: testUser.email });
+            const validOtp = userWithOtp.otp;
+            expect(validOtp).toBeDefined();
+
+            // Fail 4 times with incorrect OTP
+            for (let i = 0; i < 4; i++) {
+                const failRes = await request(app)
+                    .post("/api/auth/verify-otp")
+                    .send({ email: testUser.email, otp: "000000" });
+                expect(failRes.statusCode).toBe(400);
+                expect(failRes.body.message).toBe("Invalid OTP code");
+            }
+
+            // 5th failed attempt should trigger lockout and invalidate OTP
+            const lockoutRes = await request(app)
+                .post("/api/auth/verify-otp")
+                .send({ email: testUser.email, otp: "000000" });
+            expect(lockoutRes.statusCode).toBe(400);
+            expect(lockoutRes.body.message).toContain("Too many failed attempts");
+
+            // Verify in DB that OTP was wiped
+            const lockedUser = await User.findOne({ email: testUser.email });
+            expect(lockedUser.otp).toBeNull();
+            expect(lockedUser.otpExpiresAt).toBeNull();
+
+            // Original OTP should no longer work
+            const postLockRes = await request(app)
+                .post("/api/auth/verify-otp")
+                .send({ email: testUser.email, otp: validOtp });
+            expect(postLockRes.statusCode).toBe(400);
+            expect(postLockRes.body.message).toBe("Invalid OTP code");
+        });
+    });
 });
+

@@ -9,8 +9,6 @@ let forgotState = {
     otp: '',
     timerInterval: null,
     timeLeft: 60
-
-
 };
 
 // =========================================================
@@ -68,6 +66,8 @@ const logoutBtn = document.getElementById('logout-btn');
 // =========================================================
 function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
+    if (!container) return;
+
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
 
@@ -75,12 +75,16 @@ function showToast(message, type = 'info') {
     if (type === 'success') iconName = 'check-circle-2';
     if (type === 'error') iconName = 'alert-circle';
 
-    toast.innerHTML = `
-        <i data-lucide="${iconName}"></i>
-        <span>${message}</span>
-    `;
+    const icon = document.createElement('i');
+    icon.setAttribute('data-lucide', iconName);
 
+    const span = document.createElement('span');
+    span.textContent = message; // Safe from DOM XSS
+
+    toast.appendChild(icon);
+    toast.appendChild(span);
     container.appendChild(toast);
+
     if (window.lucide) lucide.createIcons();
 
     setTimeout(() => {
@@ -556,8 +560,10 @@ logoutBtn.addEventListener('click', () => {
     tabLoginBtn.click();
 });
 
-// Check if already logged in on page load
+// Check if already logged in on page load & initialize icons
 window.addEventListener('DOMContentLoaded', async () => {
+    if (window.lucide) lucide.createIcons();
+
     const token = localStorage.getItem('auth_token');
     if (token) {
         try {
