@@ -17,6 +17,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Ensure MongoDB connection is ready (critical for serverless platforms like Vercel)
+app.use(async (req, res, next) => {
+    if (mongoose.connection.readyState !== 1) {
+        await connectDB();
+    }
+    next();
+});
+
 // Serve static frontend files
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -55,8 +63,8 @@ app.use((req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Start Server (only when not running automated tests)
-if (process.env.NODE_ENV !== "test") {
+// Start Server (only when not running automated tests and not on Vercel)
+if (process.env.NODE_ENV !== "test" && !process.env.VERCEL) {
     app.listen(PORT, () => {
         console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
