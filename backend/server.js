@@ -40,8 +40,8 @@ app.use(express.urlencoded({ extended: true, limit: "20kb" }));
 // General API Rate Limiting
 app.use("/api", apiLimiter);
 
-// Ensure MongoDB connection is ready (critical for serverless platforms like Vercel)
-app.use(async (req, res, next) => {
+// Ensure MongoDB connection is ready for API calls
+app.use("/api", async (req, res, next) => {
     if (mongoose.connection.readyState !== 1) {
         await connectDB();
     }
@@ -60,9 +60,8 @@ app.use("/api/auth", async (req, res, next) => {
         const dbError = typeof connectDB.getLastError === "function" ? connectDB.getLastError() : "Database disconnected";
         return res.status(503).json({
             success: false,
-            message: dbError.includes("whitelist") || dbError.includes("servers")
-                ? "Database connection blocked by MongoDB Atlas. Please add 0.0.0.0/0 to Network Access in MongoDB Atlas."
-                : "Database connection unavailable. Please try again in a few seconds."
+            message: "Database connection initializing. Please try again in a moment.",
+            detail: dbError
         });
     }
     next();
