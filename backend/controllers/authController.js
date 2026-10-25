@@ -190,15 +190,17 @@ const forgotPassword = async (req, res) => {
             </div>
         `;
 
-        // Dispatch email asynchronously so client transitions to OTP screen with zero delay
-        sendEmail({
-            to: user.email,
-            subject: "Your Password Reset OTP Code",
-            text: `Your OTP for password reset is: ${otp}. It will expire in 10 minutes.`,
-            html: emailHtml
-        }).catch(err => {
-            console.error("Background Email Delivery Error:", err.message || err);
-        });
+        // Await email delivery so serverless lambda (Vercel) does not terminate prematurely
+        try {
+            await sendEmail({
+                to: user.email,
+                subject: "Your Password Reset OTP Code",
+                text: `Your OTP for password reset is: ${otp}. It will expire in 10 minutes.`,
+                html: emailHtml
+            });
+        } catch (emailErr) {
+            console.error("OTP Email Delivery Error:", emailErr.message || emailErr);
+        }
 
         res.status(200).json({
             success: true,

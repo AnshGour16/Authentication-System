@@ -9,6 +9,8 @@ let forgotState = {
     otp: '',
     timerInterval: null,
     timeLeft: 60
+
+
 };
 
 // =========================================================
@@ -68,7 +70,7 @@ function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
-    
+
     let iconName = 'info';
     if (type === 'success') iconName = 'check-circle-2';
     if (type === 'error') iconName = 'alert-circle';

@@ -12,11 +12,9 @@ const getTransporter = () => {
 
     if (!transporter) {
         transporter = nodemailer.createTransport({
-            service: process.env.EMAIL_SERVICE || "gmail",
-            pool: true,
-            maxConnections: 5,
-            maxMessages: 100,
-            rateLimit: 10,
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true, // SSL direct connection
             auth: {
                 user: emailUser,
                 pass: emailPass

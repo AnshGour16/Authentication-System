@@ -4,6 +4,7 @@ const app = require("../../server");
 const User = require("../../models/User");
 
 describe("Integration Tests: Auth Routes (/api/auth)", () => {
+    jest.setTimeout(25000);
     const timestamp = Date.now();
     const testUser = {
         name: "Test Runner",
