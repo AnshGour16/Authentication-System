@@ -51,8 +51,22 @@ app.use(async (req, res, next) => {
 // Serve static frontend files
 app.use(express.static(path.join(__dirname, "public")));
 
-// API Routes
-app.use("/api/auth", authRoutes);
+// API Routes with Database Connection Guard
+app.use("/api/auth", async (req, res, next) => {
+    if (mongoose.connection.readyState !== 1) {
+        await connectDB();
+    }
+    if (mongoose.connection.readyState !== 1) {
+        const dbError = typeof connectDB.getLastError === "function" ? connectDB.getLastError() : "Database disconnected";
+        return res.status(503).json({
+            success: false,
+            message: dbError.includes("whitelist") || dbError.includes("servers")
+                ? "Database connection blocked by MongoDB Atlas. Please add 0.0.0.0/0 to Network Access in MongoDB Atlas."
+                : "Database connection unavailable. Please try again in a few seconds."
+        });
+    }
+    next();
+}, authRoutes);
 
 // Health check / DB Test Route
 app.get("/api/health", async (req, res) => {
