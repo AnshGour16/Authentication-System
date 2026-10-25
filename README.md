@@ -1,24 +1,23 @@
+# 🔐 Full-Stack Authentication & OTP Reset System (MongoDB Atlas & Mongoose)
 
-
-# 🔐 Modern Full-Stack Authentication & OTP Reset System
-
-A secure, scalable, and responsive **Authentication System** built with **Node.js, Express, MySQL, JWT, Bcrypt, and Nodemailer**. Featuring a complete user lifecycle: Registration, Login, and a 3-Step OTP-based Forgot Password flow with a glassmorphism UI.
+A secure, high-performance, and responsive **Full-Stack Authentication System** built with **Node.js, Express, MongoDB Atlas (Mongoose ODM), JWT, Bcrypt, and Nodemailer**. Featuring a complete user lifecycle: Registration, Login, and a 3-Step OTP-based Password Reset with a glassmorphism UI and a full 31-test TDD automated testing suite.
 
 ---
 
 ## 🌟 Key Features
 
-- **User Registration**: Real-time validation, duplicate email check, and password hashing using `bcrypt`.
-- **JWT Authentication**: Secure login issuing JSON Web Tokens (JWT) for session management.
-- **Forgot Password via OTP**:
-  - Generates secure random 6-digit OTPs.
-  - Automatically calculates 10-minute Time-To-Live (TTL).
-  - Delivers HTML-formatted OTP emails directly to the user's inbox via **Nodemailer**.
+- **User Registration**: Real-time validation, duplicate email check, and salted password hashing using `bcrypt`.
+- **JWT Authentication**: Secure login issuing JSON Web Tokens (JWT) for stateless session management.
+- **Instant OTP Forgot Password Flow**:
+  - Secure random 6-digit OTP generation with 10-minute Time-To-Live (TTL).
+  - **High-Speed Non-Blocking Email Dispatch**: Saved to MongoDB in `< 50ms` so the user UI transitions instantly to Step 2 without loading lag.
+  - **Connection Pooling**: Nodemailer SMTP connection pooling (`pool: true`) for rapid delivery to user inboxes.
   - Includes a development console fallback if SMTP is not configured.
-- **Single-Use OTP Security**: OTPs are permanently invalidated (`NULL`) after a successful password reset to prevent replay attacks.
-- **Protected Profile Route**: JWT Bearer token authentication middleware (`authMiddleware`).
-- **Auto Database Migration**: Automatically verifies and creates `users` table along with `otp` & `otp_expires_at` columns on server start.
-- **Glassmorphism Frontend UI**: Built-in interactive frontend with toast notifications, password visibility toggles, 6-digit auto-focus OTP inputs, and a 60-second resend timer.
+- **Single-Use Replay Attack Defense**: OTP fields are wiped (`otp: null, otpExpiresAt: null`) immediately upon successful password reset.
+- **Protected Profile Route**: JWT Bearer token authentication middleware with MongoDB ObjectId validation.
+- **Modern Mongoose ODM**: Schema-level validation, unique indexes, and automatic timestamps (`createdAt`, `updatedAt`).
+- **Glassmorphism Frontend UI**: Built-in responsive UI with animated toast notifications, password show/hide toggles, 6-digit auto-focusing OTP inputs, and a 60-second resend countdown timer.
+- **Complete TDD Test Suite**: 31 automated Unit and Integration tests using **Jest** and **Supertest** covering every route, middleware, model, and utility.
 
 ---
 
@@ -27,9 +26,10 @@ A secure, scalable, and responsive **Authentication System** built with **Node.j
 | Layer | Technology |
 | :--- | :--- |
 | **Backend** | Node.js, Express.js |
-| **Database** | MySQL (with `mysql2` connection pooling) |
+| **Database** | MongoDB Atlas Cloud / Local MongoDB (via `mongoose` ODM) |
 | **Authentication** | JSON Web Tokens (`jsonwebtoken`), Bcrypt (`bcrypt`) |
-| **Email Delivery** | Nodemailer (Gmail SMTP / App Password) |
+| **Email Delivery** | Nodemailer (Pooled Gmail SMTP / App Password) |
+| **Testing** | Jest, Supertest (TDD methodology) |
 | **Frontend** | Vanilla HTML5, Modern CSS (Glassmorphism), Vanilla JavaScript, Lucide Icons |
 
 ---
@@ -62,7 +62,7 @@ Authentication-Project/
 │   ├── .env.example           # Template for environment variables
 │   ├── package.json           # Dependencies and scripts (dev, test, start)
 │   └── server.js              # Main Express server entry point
-├── .gitignore                 # Git ignore file
+├── .gitignore                 # Git ignore file (protects secrets & node_modules)
 └── README.md                  # Project documentation
 ```
 
@@ -71,12 +71,13 @@ Authentication-Project/
 ## ⚙️ Installation & Setup
 
 ### 1. Prerequisites
-- [Node.js](https://nodejs.org/) (v16+ recommended)
-- [MySQL Server](https://www.mysql.com/) installed and running locally
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) Account or Local MongoDB Server
 
 ### 2. Clone / Open the Project
 ```bash
-cd Authentication-Project/backend
+git clone https://github.com/AnshGour16/Authentication-System.git
+cd Authentication-System/backend
 ```
 
 ### 3. Install Dependencies
@@ -85,20 +86,17 @@ npm install
 ```
 
 ### 4. Configure Environment Variables
-Create a `.env` file in the `backend/` folder based on `.env.example`:
+Create a `.env` file in the `backend/` directory based on `.env.example`:
 
 ```env
-# Database Credentials
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_mysql_password
-DB_NAME=authentication_db
-DB_PORT=3306
+# MongoDB Atlas Connection URI
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/authentication_db?retryWrites=true&w=majority
+PORT=5000
 
-# JWT Secret
-JWT_SECRET=your_super_secret_jwt_key_123
+# JWT Secret Key
+JWT_SECRET=your_super_secret_jwt_key_here
 
-# Email Credentials (Optional: for sending real emails via Gmail)
+# Nodemailer Email Configuration (For Sending Real OTPs)
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_16_digit_gmail_app_password
 EMAIL_SERVICE=gmail
@@ -119,7 +117,7 @@ npm run dev
 ```bash
 npm test
 ```
-*Executes 31 automated test cases across 4 test suites (User Model schema validation, authMiddleware JWT verification, sendEmail utility, and end-to-end HTTP auth routes).*
+*Executes all 31 automated tests across 4 test suites (User Model schema validation, authMiddleware JWT verification, sendEmail utility, and end-to-end HTTP auth routes).*
 
 ### Start Production Server:
 ```bash
@@ -150,7 +148,7 @@ Once running, open your browser and navigate to:
   {
     "success": true,
     "message": "User registered successfully",
-    "userId": 1
+    "userId": "671ad89e7f3a9b1c2d3e4f5a"
   }
   ```
 
@@ -170,7 +168,7 @@ Once running, open your browser and navigate to:
     "message": "Login successful",
     "token": "<JWT_TOKEN>",
     "user": {
-      "id": 1,
+      "id": "671ad89e7f3a9b1c2d3e4f5a",
       "name": "John Doe",
       "email": "john@example.com"
     }
@@ -237,10 +235,10 @@ Once running, open your browser and navigate to:
   {
     "success": true,
     "user": {
-      "id": 1,
+      "id": "671ad89e7f3a9b1c2d3e4f5a",
       "name": "John Doe",
       "email": "john@example.com",
-      "created_at": "2026-09-07T00:00:00.000Z"
+      "created_at": "2026-10-25T00:00:00.000Z"
     }
   }
   ```
@@ -249,11 +247,29 @@ Once running, open your browser and navigate to:
 
 ## 🔒 Security Best Practices Implemented
 
-1. **Password Hashing**: Passwords are never stored in plain text; salted and hashed with `bcrypt` (10 rounds).
-2. **Replay Attack Defense**: OTP fields are wiped from the database (`otp = NULL, otp_expires_at = NULL`) immediately upon password update.
+1. **Password Hashing**: Passwords are salted and hashed with `bcrypt` (10 rounds) before storage.
+2. **Replay Attack Defense**: OTP fields are wiped from MongoDB (`otp: null, otpExpiresAt: null`) immediately upon password update.
 3. **Time Expiration**: OTPs strictly expire in 10 minutes.
-4. **JWT Verification**: Protected endpoints validate tokens using `jsonwebtoken` and reject expired or tampered tokens.
-5. **CORS Protected**: Configured via Express CORS middleware for secure cross-origin requests.
+4. **JWT Verification**: Protected endpoints validate tokens using `jsonwebtoken` and reject expired, forged, or malformed tokens.
+5. **ObjectId Validation**: Prevents CastError vulnerabilities by validating MongoDB ObjectIds before database lookups.
+6. **CORS Protected**: Configured via Express CORS middleware for secure cross-origin requests.
+
+---
+
+## 🧪 Automated Testing Results
+
+```text
+PASS tests/integration/authRoutes.test.js
+PASS tests/unit/User.model.test.js
+PASS tests/unit/authMiddleware.test.js
+PASS tests/unit/sendEmail.test.js
+
+Test Suites: 4 passed, 4 total
+Tests:       31 passed, 31 total
+Snapshots:   0 total
+Time:        6.107 s
+Ran all test suites.
+```
 
 ---
 
