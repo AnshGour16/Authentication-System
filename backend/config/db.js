@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 let isConnected = false;
+let lastError = null;
 
 const connectDB = async () => {
     // Reuse existing connection if active
@@ -9,16 +10,28 @@ const connectDB = async () => {
     }
 
     try {
-        const mongoURI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/authentication_db";
+        const mongoURI = process.env.MONGO_URI;
 
-        const conn = await mongoose.connect(mongoURI);
+        if (!mongoURI) {
+            lastError = "MONGO_URI environment variable is not defined in Vercel project settings.";
+            console.error(" MongoDB Config Error:", lastError);
+            return;
+        }
+
+        const conn = await mongoose.connect(mongoURI, {
+            serverSelectionTimeoutMS: 5000 // Fast fail in serverless
+        });
         isConnected = true;
+        lastError = null;
 
         console.log(` MongoDB Connected: ${conn.connection.host} / Database: ${conn.connection.name}`);
     } catch (error) {
+        lastError = error.message;
         console.error(" MongoDB Connection Failed:", error.message);
-        console.log("Tip: Ensure local MongoDB is running or add your MongoDB Atlas connection string to .env (MONGO_URI=...)");
     }
 };
 
+const getLastError = () => lastError;
+
 module.exports = connectDB;
+module.exports.getLastError = getLastError;

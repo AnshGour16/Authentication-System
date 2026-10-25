@@ -57,12 +57,18 @@ app.use("/api/auth", authRoutes);
 // Health check / DB Test Route
 app.get("/api/health", async (req, res) => {
     try {
+        if (mongoose.connection.readyState !== 1) {
+            await connectDB();
+        }
         const isConnected = mongoose.connection.readyState === 1;
         if (!isConnected) {
             return res.status(503).json({
                 success: false,
                 message: "Database connecting or disconnected",
-                readyState: mongoose.connection.readyState
+                hasMongoUri: Boolean(process.env.MONGO_URI),
+                hasJwtSecret: Boolean(process.env.JWT_SECRET),
+                readyState: mongoose.connection.readyState,
+                error: typeof connectDB.getLastError === "function" ? connectDB.getLastError() : null
             });
         }
         res.json({
