@@ -7,593 +7,336 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="landing-body">
-    <!-- Global Navbar -->
-    <header class="app-nav">
-        <div class="nav-container">
-            <a href="index.html" class="nav-brand">
-                <div class="logo-icon"><i data-lucide="shield-check"></i></div>
+<body>
+    <!-- Top Global Navbar -->
+    <nav class="navbar" aria-label="Main Navigation">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <div class="brand-icon"><i class="bi bi-shield-check"></i></div>
                 <span>SecureAuth</span>
             </a>
-            <div class="nav-actions">
-                <a href="docs.html" class="btn-nav-outline"><i data-lucide="book-open"></i> API Docs</a>
-                <button type="button" id="top-logout-btn" class="btn-nav-outline" style="color: #fca5a5; border-color: rgba(239, 68, 68, 0.3);">
-                    <i data-lucide="log-out"></i> Logout
+            <div class="navbar-actions">
+                <a href="docs.html" class="btn-outline-sm"><i class="bi bi-book"></i> API Docs</a>
+                <button type="button" id="btn-top-logout" class="btn-outline-sm text-danger">
+                    <i class="bi bi-box-arrow-right"></i> Sign Out
                 </button>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- Background Glows -->
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
-    <div class="bg-shape shape-3"></div>
-
-    <!-- Toast Notifications Container -->
-    <div id="toast-container" class="toast-container"></div>
-
-    <!-- Dashboard Portal Container -->
-    <div class="dashboard-wrapper">
-        
-        <!-- Sidebar Navigation -->
-        <aside class="dash-sidebar">
-            <div class="sidebar-user-brief">
-                <div class="sidebar-avatar" id="side-avatar">U</div>
-                <h3 class="sidebar-name" id="side-name">Loading...</h3>
-                <p class="sidebar-email" id="side-email">user@example.com</p>
-                <span class="sidebar-role-badge role-user" id="side-role-badge">USER</span>
-            </div>
-
-            <ul class="sidebar-nav-list">
-                <li>
-                    <button type="button" class="sidebar-nav-btn active" data-tab="tab-overview">
-                        <i data-lucide="layout-dashboard"></i> Overview
-                    </button>
-                </li>
-                <li>
-                    <button type="button" class="sidebar-nav-btn" data-tab="tab-profile">
-                        <i data-lucide="user-cog"></i> Profile Settings
-                    </button>
-                </li>
-                <li>
-                    <button type="button" class="sidebar-nav-btn" data-tab="tab-security">
-                        <i data-lucide="shield-alert"></i> Security & Password
-                    </button>
-                </li>
-                <li>
-                    <button type="button" class="sidebar-nav-btn" data-tab="tab-developer">
-                        <i data-lucide="terminal"></i> Token & API Tester
-                    </button>
-                </li>
-                <li id="admin-nav-item" class="hidden">
-                    <div class="sidebar-divider"></div>
-                    <a href="admin.html" class="sidebar-nav-btn" style="color: #d8b4fe; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3);">
-                        <i data-lucide="crown"></i> Admin Portal
-                    </a>
-                </li>
-            </ul>
-
-            <div class="sidebar-divider"></div>
-            <button type="button" id="sidebar-logout-btn" class="sidebar-nav-btn" style="color: #fca5a5;">
-                <i data-lucide="log-out"></i> Sign Out
-            </button>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="dash-content-area">
-
-            <!-- TAB 1: OVERVIEW -->
-            <section id="tab-overview" class="dash-panel active">
-                <div class="content-box">
-                    <div class="box-header">
-                        <div>
-                            <h3><i data-lucide="sparkles" style="color: var(--primary-light);"></i> Welcome Back, <span id="dash-greeting-name">User</span></h3>
-                            <p style="color: var(--text-dim); font-size: 13px; margin-top: 4px;">Here is your session overview and identity security status</p>
-                        </div>
-                        <span class="badge-success" style="padding: 6px 12px; font-size: 12px; border-radius: 999px;">
-                            <i data-lucide="check-circle" style="width: 14px; height: 14px; display: inline-block; vertical-align: -2px;"></i> Authenticated
-                        </span>
-                    </div>
-
-                    <!-- KPI Cards -->
-                    <div class="kpi-grid">
-                        <div class="kpi-card">
-                            <div class="kpi-top">
-                                <span class="kpi-label">Security Score</span>
-                                <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
-                                    <i data-lucide="shield-check"></i>
-                                </div>
-                            </div>
-                            <div class="kpi-val" style="color: #10b981;">98%</div>
-                            <p style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Bcrypt + Lockout Active</p>
-                        </div>
-
-                        <div class="kpi-card">
-                            <div class="kpi-top">
-                                <span class="kpi-label">Assigned Role</span>
-                                <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--primary-light);">
-                                    <i data-lucide="award"></i>
-                                </div>
-                            </div>
-                            <div class="kpi-val" id="dash-kpi-role">USER</div>
-                            <p style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Role-Segregated Access</p>
-                        </div>
-
-                        <div class="kpi-card">
-                            <div class="kpi-top">
-                                <span class="kpi-label">Token Expiry</span>
-                                <div class="kpi-icon" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
-                                    <i data-lucide="clock"></i>
-                                </div>
-                            </div>
-                            <div class="kpi-val">24 hrs</div>
-                            <p style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">JWT Stateless Validity</p>
-                        </div>
-
-                        <div class="kpi-card">
-                            <div class="kpi-top">
-                                <span class="kpi-label">Member Since</span>
-                                <div class="kpi-icon" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">
-                                    <i data-lucide="calendar"></i>
-                                </div>
-                            </div>
-                            <div class="kpi-val" id="dash-kpi-date" style="font-size: 18px; margin-top: 4px;">Today</div>
-                            <p style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Verified Account</p>
-                        </div>
-                    </div>
-
-                    <!-- Quick Details -->
-                    <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--card-border); border-radius: var(--radius-md); padding: 20px;">
-                        <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--primary-light);">
-                            <i data-lucide="info" style="width: 16px; height: 16px; vertical-align: -3px;"></i> System Architecture Highlights
-                        </h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
-                            <div style="display: flex; gap: 8px; color: var(--text-muted);">
-                                <i data-lucide="check" style="color: var(--success); width: 16px; height: 16px;"></i>
-                                <span><strong>Password Encryption:</strong> Salted Bcrypt 10-rounds</span>
-                            </div>
-                            <div style="display: flex; gap: 8px; color: var(--text-muted);">
-                                <i data-lucide="check" style="color: var(--success); width: 16px; height: 16px;"></i>
-                                <span><strong>Brute Force:</strong> 5-attempt automatic lockout</span>
-                            </div>
-                            <div style="display: flex; gap: 8px; color: var(--text-muted);">
-                                <i data-lucide="check" style="color: var(--success); width: 16px; height: 16px;"></i>
-                                <span><strong>Rate Limiter:</strong> Tiered Express limits</span>
-                            </div>
-                            <div style="display: flex; gap: 8px; color: var(--text-muted);">
-                                <i data-lucide="check" style="color: var(--success); width: 16px; height: 16px;"></i>
-                                <span><strong>Replay Attack Defense:</strong> Single-use wiped OTPs</span>
-                            </div>
-                        </div>
-                    </div>
-
+    <!-- Main Portal Layout -->
+    <div class="app-container">
+        <div class="portal-grid">
+            
+            <!-- Portal Sidebar -->
+            <aside class="portal-sidebar" aria-label="User Navigation">
+                <div class="sidebar-profile">
+                    <div class="user-avatar-circle" id="user-side-avatar">U</div>
+                    <div class="sidebar-user-name" id="user-side-name">Loading...</div>
+                    <div class="sidebar-user-email" id="user-side-email">user@example.com</div>
+                    <span class="role-chip role-chip-user" id="user-side-role">USER</span>
                 </div>
-            </section>
 
-            <!-- TAB 2: PROFILE SETTINGS -->
-            <section id="tab-profile" class="dash-panel">
-                <div class="content-box">
-                    <div class="box-header">
-                        <h3><i data-lucide="user-cog" style="color: var(--primary-light);"></i> Profile Management</h3>
-                        <p style="color: var(--text-dim); font-size: 13px;">Update your display name and personal settings</p>
-                    </div>
-
-                    <form id="profile-edit-form" novalidate style="max-width: 500px;">
-                        <div class="form-group">
-                            <label for="edit-name">Display Name</label>
-                            <div class="input-wrapper">
-                                <i data-lucide="user" class="input-icon"></i>
-                                <input type="text" id="edit-name" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="edit-email">Email Address (Primary Identity)</label>
-                            <div class="input-wrapper">
-                                <i data-lucide="mail" class="input-icon"></i>
-                                <input type="email" id="edit-email" disabled style="opacity: 0.7; cursor: not-allowed;">
-                            </div>
-                            <small style="color: var(--text-dim); font-size: 11px; margin-top: 4px; display: block;">
-                                Email address is your unique system identifier and cannot be changed directly.
-                            </small>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="edit-role-display">Account Role</label>
-                            <div class="input-wrapper">
-                                <i data-lucide="shield" class="input-icon"></i>
-                                <input type="text" id="edit-role-display" disabled style="opacity: 0.7; cursor: not-allowed;">
-                            </div>
-                        </div>
-
-                        <button type="submit" id="save-profile-btn" class="btn btn-primary" style="margin-top: 14px;">
-                            <span>Save Profile Changes</span>
-                            <i data-lucide="save"></i>
+                <ul class="dash-nav-list">
+                    <li>
+                        <button type="button" class="dash-nav-btn active" data-target="tab-overview">
+                            <i class="bi bi-speedometer2"></i> Overview
                         </button>
-                    </form>
-                </div>
-            </section>
-
-            <!-- TAB 3: SECURITY & PASSWORD -->
-            <section id="tab-security" class="dash-panel">
-                <div class="content-box">
-                    <div class="box-header">
-                        <h3><i data-lucide="key" style="color: var(--primary-light);"></i> Change Password</h3>
-                        <p style="color: var(--text-dim); font-size: 13px;">Requires verification of your current password</p>
-                    </div>
-
-                    <form id="change-pwd-form" novalidate style="max-width: 500px;">
-                        <div class="form-group">
-                            <label for="current-pwd">Current Password</label>
-                            <div class="input-wrapper">
-                                <i data-lucide="lock" class="input-icon"></i>
-                                <input type="password" id="current-pwd" placeholder="Enter current password" required>
-                                <button type="button" class="toggle-password" data-target="current-pwd">
-                                    <i data-lucide="eye"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="new-dash-pwd">New Password</label>
-                            <div class="input-wrapper">
-                                <i data-lucide="lock-keyhole" class="input-icon"></i>
-                                <input type="password" id="new-dash-pwd" placeholder="Enter new strong password" required>
-                                <button type="button" class="toggle-password" data-target="new-dash-pwd">
-                                    <i data-lucide="eye"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="confirm-dash-pwd">Confirm New Password</label>
-                            <div class="input-wrapper">
-                                <i data-lucide="shield-check" class="input-icon"></i>
-                                <input type="password" id="confirm-dash-pwd" placeholder="Re-enter new password" required>
-                                <button type="button" class="toggle-password" data-target="confirm-dash-pwd">
-                                    <i data-lucide="eye"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <button type="submit" id="change-pwd-btn" class="btn btn-primary" style="margin-top: 10px;">
-                            <span>Update Password</span>
-                            <i data-lucide="check-circle-2"></i>
+                    </li>
+                    <li>
+                        <button type="button" class="dash-nav-btn" data-target="tab-profile">
+                            <i class="bi bi-person-gear"></i> Profile Settings
                         </button>
-                    </form>
-                </div>
-
-                <!-- Recent Login Activity / Sessions -->
-                <div class="content-box">
-                    <div class="box-header">
-                        <h3><i data-lucide="history" style="color: var(--primary-light);"></i> Active Session & Recent History</h3>
-                        <button type="button" id="refresh-sessions-btn" class="btn-action-sm">
-                            <i data-lucide="refresh-cw"></i> Refresh
+                    </li>
+                    <li>
+                        <button type="button" class="dash-nav-btn" data-target="tab-security">
+                            <i class="bi bi-shield-check"></i> Security & Password
                         </button>
-                    </div>
+                    </li>
+                    <li>
+                        <button type="button" class="dash-nav-btn" data-target="tab-developer">
+                            <i class="bi bi-code-slash"></i> Token & API Tester
+                        </button>
+                    </li>
+                    <li id="admin-nav-item" class="d-none">
+                        <div style="height: 1px; background: var(--border-subtle); margin: 8px 0;"></div>
+                        <a href="admin.html" class="dash-nav-btn text-primary" style="background: var(--brand-subtle); border: 1px solid rgba(99, 102, 241, 0.25);">
+                            <i class="bi bi-shield-lock-fill"></i> Admin Portal
+                        </a>
+                    </li>
+                </ul>
 
-                    <div id="session-current-info" style="padding: 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-sm); margin-bottom: 20px; font-size: 13px; display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <strong style="color: #6ee7b7;"><i data-lucide="radio" style="width: 14px; height: 14px; vertical-align: -2px;"></i> Active Session:</strong>
-                            <span id="session-ip" style="margin-left: 6px; color: var(--text-main);">127.0.0.1</span> • <span id="session-device" style="color: var(--text-dim);">Browser</span>
+                <div style="height: 1px; background: var(--border-subtle); margin: 16px 0;"></div>
+                <button type="button" id="btn-dashboard-logout" class="dash-nav-btn text-danger">
+                    <i class="bi bi-box-arrow-right"></i> Terminate Session
+                </button>
+            </aside>
+
+            <!-- Main Panel Content -->
+            <main>
+                
+                <!-- TAB 1: OVERVIEW -->
+                <section id="tab-overview" class="dash-tab-panel">
+                    <div class="surface-card">
+                        <div class="surface-card-header">
+                            <div>
+                                <h2 class="surface-title"><i class="bi bi-person-circle text-primary"></i> Session Context: <span id="dash-greeting-name">User</span></h2>
+                                <p class="surface-desc">Identity verification and credential telemetry</p>
+                            </div>
+                            <span class="status-chip status-chip-success">
+                                <i class="bi bi-check-circle-fill"></i> ACTIVE SESSION
+                            </span>
                         </div>
-                        <span class="badge-success">Current</span>
+
+                        <!-- KPI Tiles -->
+                        <div class="kpi-row">
+                            <div class="kpi-tile">
+                                <div class="kpi-tile-header">
+                                    <span class="kpi-tile-label">Security Health</span>
+                                    <i class="bi bi-shield-check text-success"></i>
+                                </div>
+                                <div class="kpi-tile-val text-success">98%</div>
+                                <div class="text-muted small" style="margin-top: 4px;">Salted Bcrypt Active</div>
+                            </div>
+
+                            <div class="kpi-tile">
+                                <div class="kpi-tile-header">
+                                    <span class="kpi-tile-label">Role Tier</span>
+                                    <i class="bi bi-person-badge text-primary"></i>
+                                </div>
+                                <div class="kpi-tile-val" id="kpi-role-value">USER</div>
+                                <div class="text-muted small" style="margin-top: 4px;">RBAC Segregated</div>
+                            </div>
+
+                            <div class="kpi-tile">
+                                <div class="kpi-tile-header">
+                                    <span class="kpi-tile-label">Session Validity</span>
+                                    <i class="bi bi-clock-history text-info"></i>
+                                </div>
+                                <div class="kpi-tile-val">24 hrs</div>
+                                <div class="text-muted small" style="margin-top: 4px;">Stateless Bearer JWT</div>
+                            </div>
+
+                            <div class="kpi-tile">
+                                <div class="kpi-tile-header">
+                                    <span class="kpi-tile-label">Lockout Defense</span>
+                                    <i class="bi bi-shield-slash text-warning"></i>
+                                </div>
+                                <div class="kpi-tile-val text-warning">5 Fails</div>
+                                <div class="text-muted small" style="margin-top: 4px;">15-Min Lockout Threshold</div>
+                            </div>
+                        </div>
+
+                        <!-- System Specs Box -->
+                        <div style="background: var(--surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 18px;">
+                            <div class="fw-semibold small text-primary" style="margin-bottom: 12px;">
+                                <i class="bi bi-info-circle-fill"></i> Cryptographic Implementation Standards
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;" class="text-muted">
+                                <div><i class="bi bi-check text-success"></i> Password Hashing: Bcrypt (10 rounds, 128-char limit)</div>
+                                <div><i class="bi bi-check text-success"></i> Recovery Protocol: Cryptographic 6-digit OTP (10m TTL)</div>
+                                <div><i class="bi bi-check text-success"></i> Replay Attack Defense: Immediate token purge upon reset</div>
+                                <div><i class="bi bi-check text-success"></i> Transport Layer: Pooled SMTP direct SSL (Port 465)</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- TAB 2: PROFILE SETTINGS -->
+                <section id="tab-profile" class="dash-tab-panel d-none">
+                    <div class="surface-card">
+                        <div class="surface-card-header">
+                            <div>
+                                <h2 class="surface-title"><i class="bi bi-person-gear text-primary"></i> Profile Settings</h2>
+                                <p class="surface-desc">Manage account identity information</p>
+                            </div>
+                        </div>
+
+                        <form id="form-update-profile" novalidate style="max-width: 480px;">
+                            <div class="form-group">
+                                <label class="form-label" for="profile-input-name">Display Name</label>
+                                <div class="input-container">
+                                    <i class="bi bi-person input-icon"></i>
+                                    <input type="text" id="profile-input-name" class="form-input" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="profile-input-email">Registered Email Address</label>
+                                <div class="input-container">
+                                    <i class="bi bi-envelope input-icon"></i>
+                                    <input type="email" id="profile-input-email" class="form-input" disabled style="opacity: 0.6; cursor: not-allowed;">
+                                </div>
+                                <span class="text-muted small" style="margin-top: 4px; display: block;">Primary identifier cannot be altered directly.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="profile-input-role">Assigned Authorization Tier</label>
+                                <div class="input-container">
+                                    <i class="bi bi-shield-lock input-icon"></i>
+                                    <input type="text" id="profile-input-role" class="form-input" disabled style="opacity: 0.6; cursor: not-allowed;">
+                                </div>
+                            </div>
+
+                            <button type="submit" id="btn-save-profile" class="btn-primary" style="margin-top: 10px;">
+                                <span>Save Profile Changes</span>
+                                <i class="bi bi-check-lg"></i>
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- TAB 3: SECURITY & PASSWORD -->
+                <section id="tab-security" class="dash-tab-panel d-none">
+                    <div class="surface-card">
+                        <div class="surface-card-header">
+                            <div>
+                                <h2 class="surface-title"><i class="bi bi-key text-primary"></i> Credential Management</h2>
+                                <p class="surface-desc">Change password with mandatory current credential verification</p>
+                            </div>
+                        </div>
+
+                        <form id="form-change-password" novalidate style="max-width: 480px;">
+                            <div class="form-group">
+                                <label class="form-label" for="pwd-current">Current Password</label>
+                                <div class="input-container">
+                                    <i class="bi bi-lock input-icon"></i>
+                                    <input type="password" id="pwd-current" class="form-input" placeholder="Enter current password" required>
+                                    <button type="button" class="toggle-password-btn" data-target="pwd-current" aria-label="Toggle password visibility">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="pwd-new">New Password</label>
+                                <div class="input-container">
+                                    <i class="bi bi-key input-icon"></i>
+                                    <input type="password" id="pwd-new" class="form-input" placeholder="Enter new strong password" required>
+                                    <button type="button" class="toggle-password-btn" data-target="pwd-new" aria-label="Toggle password visibility">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="pwd-confirm">Confirm New Password</label>
+                                <div class="input-container">
+                                    <i class="bi bi-shield-check input-icon"></i>
+                                    <input type="password" id="pwd-confirm" class="form-input" placeholder="Confirm new password" required>
+                                    <button type="button" class="toggle-password-btn" data-target="pwd-confirm" aria-label="Toggle password visibility">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="btn-change-pwd" class="btn-primary" style="margin-top: 10px;">
+                                <span>Update Credentials</span>
+                                <i class="bi bi-check-circle-fill"></i>
+                            </button>
+                        </form>
                     </div>
 
-                    <div class="table-wrapper">
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp</th>
-                                    <th>IP Address</th>
-                                    <th>Client / Device</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sessions-table-body">
-                                <tr>
-                                    <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 20px;">Loading session history...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 4: TOKEN & DEVELOPER TESTER -->
-            <section id="tab-developer" class="dash-panel">
-                <div class="content-box">
-                    <div class="box-header">
-                        <h3><i data-lucide="terminal" style="color: var(--primary-light);"></i> JWT Token Inspector & API Tester</h3>
-                        <p style="color: var(--text-dim); font-size: 13px;">Live cryptographic inspection & protected route simulator</p>
-                    </div>
-
-                    <!-- Token Display -->
-                    <div class="token-box" style="margin-bottom: 24px;">
-                        <div class="token-header">
-                            <span><i data-lucide="key"></i> Live Bearer Token</span>
-                            <button type="button" id="copy-jwt-btn" class="btn-copy">
-                                <i data-lucide="copy"></i> Copy Token
+                    <!-- Active Session & History -->
+                    <div class="surface-card">
+                        <div class="surface-card-header">
+                            <div>
+                                <h2 class="surface-title"><i class="bi bi-clock-history text-primary"></i> Active Session & Audit Trail</h2>
+                                <p class="surface-desc">Recent authentication events recorded for this account</p>
+                            </div>
+                            <button type="button" id="btn-refresh-sessions" class="btn-outline-sm">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh
                             </button>
                         </div>
-                        <div class="token-preview" id="dash-jwt-preview" style="word-break: break-all; max-height: 100px; overflow-y: auto;">
-                            Loading JWT...
+
+                        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <strong class="text-success small font-monospace"><i class="bi bi-broadcast"></i> Current Session:</strong>
+                                <span id="active-session-ip" class="font-monospace small" style="margin-left: 8px;">127.0.0.1</span>
+                                <span class="text-muted small"> • </span>
+                                <span id="active-session-device" class="text-muted small">Browser</span>
+                            </div>
+                            <span class="status-chip status-chip-success">ESTABLISHED</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Client IP</th>
+                                        <th>Client Device</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sessions-table-body">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-3">Loading session history...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                </section>
 
-                    <!-- Decoded Claims Card -->
-                    <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--card-border); border-radius: var(--radius-sm); padding: 18px; margin-bottom: 24px;">
-                        <h4 style="font-size: 13px; font-weight: 700; color: var(--primary-light); margin-bottom: 12px;">
-                            <i data-lucide="code"></i> Decoded JWT Payload (Client Inspection)
-                        </h4>
-                        <pre id="decoded-jwt-claims" class="json-view-pre">{ "loading": true }</pre>
-                    </div>
-
-                    <!-- Live API Test Action -->
-                    <div class="live-tester-box">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                            <strong style="font-size: 14px;"><i data-lucide="play"></i> Test Protected Profile Endpoint: <code>GET /api/auth/profile</code></strong>
-                            <button type="button" id="run-profile-test-btn" class="btn-hero-primary" style="padding: 8px 16px; font-size: 13px;">
-                                <i data-lucide="send"></i> Dispatch Bearer Request
-                            </button>
+                <!-- TAB 4: TOKEN & DEVELOPER TESTER -->
+                <section id="tab-developer" class="dash-tab-panel d-none">
+                    <div class="surface-card">
+                        <div class="surface-card-header">
+                            <div>
+                                <h2 class="surface-title"><i class="bi bi-code-slash text-primary"></i> Cryptographic Token Telemetry</h2>
+                                <p class="surface-desc">Inspect active JWT claims and dispatch authenticated API calls</p>
+                            </div>
                         </div>
-                        <pre id="live-api-response" class="json-view-pre">// Response will appear here upon dispatch...</pre>
+
+                        <!-- Raw JWT Display -->
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <label class="form-label" style="margin-bottom: 0;"><i class="bi bi-key"></i> Active Bearer Token</label>
+                                <button type="button" id="btn-copy-jwt" class="btn-outline-sm">
+                                    <i class="bi bi-clipboard"></i> Copy Token
+                                </button>
+                            </div>
+                            <div class="code-console" id="jwt-token-preview">Loading Token...</div>
+                        </div>
+
+                        <!-- Decoded Claims -->
+                        <div style="margin-bottom: 20px;">
+                            <label class="form-label"><i class="bi bi-terminal"></i> Decoded JWT Payload (Client Inspection)</label>
+                            <pre class="code-console" id="jwt-claims-preview">{}</pre>
+                        </div>
+
+                        <!-- Live Profile API Tester -->
+                        <div style="background: var(--surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 18px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <div>
+                                    <span class="method-badge method-get">GET</span>
+                                    <strong class="small font-monospace" style="margin-left: 6px;">/api/auth/profile</strong>
+                                </div>
+                                <button type="button" id="btn-test-profile-api" class="btn-primary-sm">
+                                    <i class="bi bi-play-fill"></i> Execute Request
+                                </button>
+                            </div>
+                            <pre class="code-console" id="api-test-output">// Click 'Execute Request' to test Bearer token verification against server...</pre>
+                        </div>
+
                     </div>
+                </section>
 
-                </div>
-            </section>
-
-        </main>
+            </main>
+        </div>
     </div>
 
-    <script src="auth-helper.js"></script>
-    <script>
-        lucide.createIcons();
-
-        // Guard Route
-        const auth = requireAuth();
-        if (!auth) throw new Error('Unauthenticated');
-
-        let currentUser = auth.user;
-        const token = auth.token;
-
-        // UI Binding
-        function updateUI() {
-            document.getElementById('side-name').textContent = currentUser.name || 'User';
-            document.getElementById('dash-greeting-name').textContent = currentUser.name || 'User';
-            document.getElementById('side-email').textContent = currentUser.email || '';
-            document.getElementById('side-avatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
-
-            // Role Badge
-            const roleBadge = document.getElementById('side-role-badge');
-            const kpiRole = document.getElementById('dash-kpi-role');
-            const role = (currentUser.role || 'user').toUpperCase();
-
-            roleBadge.textContent = role;
-            kpiRole.textContent = role;
-
-            if (currentUser.role === 'admin') {
-                roleBadge.className = 'sidebar-role-badge role-admin';
-                document.getElementById('admin-nav-item').classList.remove('hidden');
-            } else {
-                roleBadge.className = 'sidebar-role-badge role-user';
-            }
-
-            // Edit Profile inputs
-            document.getElementById('edit-name').value = currentUser.name || '';
-            document.getElementById('edit-email').value = currentUser.email || '';
-            document.getElementById('edit-role-display').value = role;
-
-            // Token preview
-            document.getElementById('dash-jwt-preview').textContent = token;
-
-            // Parse JWT Payload
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-                document.getElementById('decoded-jwt-claims').textContent = JSON.stringify(JSON.parse(jsonPayload), null, 2);
-            } catch (e) {
-                document.getElementById('decoded-jwt-claims').textContent = JSON.stringify({ error: 'Failed to decode token payload' }, null, 2);
-            }
-        }
-
-        updateUI();
-
-        // Tab Switching
-        const navBtns = document.querySelectorAll('.sidebar-nav-btn[data-tab]');
-        const panels = document.querySelectorAll('.dash-panel');
-
-        navBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetTab = btn.getAttribute('data-tab');
-
-                navBtns.forEach(b => b.classList.remove('active'));
-                panels.forEach(p => p.classList.remove('active'));
-
-                btn.classList.add('active');
-                const activePanel = document.getElementById(targetTab);
-                if (activePanel) activePanel.classList.add('active');
-
-                if (targetTab === 'tab-security') {
-                    loadSessions();
-                }
-
-                if (window.lucide) lucide.createIcons();
-            });
-        });
-
-        // Copy JWT
-        document.getElementById('copy-jwt-btn').addEventListener('click', () => {
-            navigator.clipboard.writeText(token);
-            showToast('JWT copied to clipboard!', 'info');
-        });
-
-        // Test Protected Profile Endpoint
-        document.getElementById('run-profile-test-btn').addEventListener('click', async () => {
-            const respBox = document.getElementById('live-api-response');
-            respBox.textContent = '// Dispatching Authorization: Bearer <token>...';
-
-            try {
-                const res = await fetch('/api/auth/profile', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                respBox.textContent = `// HTTP Status: ${res.status} ${res.statusText}\n` + JSON.stringify(data, null, 2);
-                if (res.ok) {
-                    showToast('Protected profile verification succeeded (200 OK)!', 'success');
-                } else {
-                    showToast('Profile verification failed', 'error');
-                }
-            } catch (err) {
-                respBox.textContent = `// Network Error: ${err.message}`;
-                showToast('Failed to connect to profile endpoint', 'error');
-            }
-        });
-
-        // Save Profile
-        document.getElementById('profile-edit-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('edit-name').value.trim();
-            const saveBtn = document.getElementById('save-profile-btn');
-
-            if (!name) {
-                showToast('Name cannot be empty', 'error');
-                return;
-            }
-
-            setBtnLoading(saveBtn, true, 'Saving...');
-
-            try {
-                const res = await fetch('/api/auth/profile', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ name })
-                });
-
-                const data = await res.json();
-                if (res.ok) {
-                    currentUser.name = name;
-                    saveAuthSession(token, currentUser);
-                    updateUI();
-                    showToast('Profile updated successfully!', 'success');
-                } else {
-                    showToast(data.message || 'Error updating profile', 'error');
-                }
-            } catch (err) {
-                showToast('Server connection error', 'error');
-            } finally {
-                setBtnLoading(saveBtn, false, 'Save Profile Changes');
-            }
-        });
-
-        // Change Password
-        document.getElementById('change-pwd-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const currentPassword = document.getElementById('current-pwd').value;
-            const newPassword = document.getElementById('new-dash-pwd').value;
-            const confirmPassword = document.getElementById('confirm-dash-pwd').value;
-            const btn = document.getElementById('change-pwd-btn');
-
-            if (!currentPassword || !newPassword || !confirmPassword) {
-                showToast('Please fill out all password fields', 'error');
-                return;
-            }
-
-            if (newPassword !== confirmPassword) {
-                showToast('New passwords do not match', 'error');
-                return;
-            }
-
-            if (newPassword.length < 6) {
-                showToast('New password must be at least 6 characters', 'error');
-                return;
-            }
-
-            setBtnLoading(btn, true, 'Updating Password...');
-
-            try {
-                const res = await fetch('/api/auth/change-password', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ currentPassword, newPassword })
-                });
-
-                const data = await res.json();
-                if (res.ok) {
-                    showToast('Password changed successfully!', 'success');
-                    document.getElementById('change-pwd-form').reset();
-                } else {
-                    showToast(data.message || 'Error updating password', 'error');
-                }
-            } catch (err) {
-                showToast('Server connection error', 'error');
-            } finally {
-                setBtnLoading(btn, false, 'Update Password');
-            }
-        });
-
-        // Load Sessions & History
-        async function loadSessions() {
-            const tableBody = document.getElementById('sessions-table-body');
-            try {
-                const res = await fetch('/api/auth/sessions', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-
-                if (res.ok && data.sessions) {
-                    document.getElementById('session-ip').textContent = data.sessions.current.ip;
-                    document.getElementById('session-device').textContent = data.sessions.current.device;
-
-                    const history = data.sessions.history || [];
-                    if (history.length === 0) {
-                        tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 16px;">No recorded security events yet.</td></tr>`;
-                        return;
-                    }
-
-                    tableBody.innerHTML = history.map(item => `
-                        <tr>
-                            <td>${new Date(item.timestamp).toLocaleString()}</td>
-                            <td><code>${item.ip || '127.0.0.1'}</code></td>
-                            <td>${item.device || 'Browser'}</td>
-                            <td>
-                                <span class="${item.status === 'failed' ? 'status-badge-suspended' : 'status-badge-active'}" style="padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                                    ${item.status}
-                                </span>
-                            </td>
-                        </tr>
-                    `).join('');
-                }
-            } catch (err) {
-                tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #fca5a5; padding: 16px;">Failed to fetch session history</td></tr>`;
-            }
-        }
-
-        document.getElementById('refresh-sessions-btn').addEventListener('click', loadSessions);
-
-        // Logout
-        function handleLogout() {
-            clearAuthSession();
-            showToast('Logged out successfully', 'info');
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 800);
-        }
-
-        document.getElementById('sidebar-logout-btn').addEventListener('click', handleLogout);
-        document.getElementById('top-logout-btn').addEventListener('click', handleLogout);
-    </script>
+    <!-- Modular Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/pages/dashboard.js"></script>
 </body>
 </html>

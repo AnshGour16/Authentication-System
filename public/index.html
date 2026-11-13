@@ -7,209 +7,185 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="landing-body">
-    <!-- Navbar -->
-    <header class="app-nav">
-        <div class="nav-container">
-            <a href="index.html" class="nav-brand">
-                <div class="logo-icon"><i data-lucide="shield-check"></i></div>
+<body>
+    <!-- Top Global Navbar -->
+    <nav class="navbar" aria-label="Main Navigation">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <div class="brand-icon"><i class="bi bi-shield-check"></i></div>
                 <span>SecureAuth</span>
             </a>
-            <ul class="nav-menu">
-                <li><a href="#features"><i data-lucide="sparkles"></i> Features</a></li>
-                <li><a href="#architecture"><i data-lucide="cpu"></i> Architecture</a></li>
-                <li><a href="docs.html"><i data-lucide="book-open"></i> API Docs</a></li>
+            <ul class="navbar-nav">
+                <li><a href="#features" class="nav-link"><i class="bi bi-grid-fill"></i> Features</a></li>
+                <li><a href="#architecture" class="nav-link"><i class="bi bi-diagram-3-fill"></i> Architecture</a></li>
+                <li><a href="docs.html" class="nav-link"><i class="bi bi-book"></i> API Docs</a></li>
             </ul>
-            <div class="nav-actions" id="nav-auth-actions">
-                <a href="login.html" class="btn-nav-outline">Sign In</a>
-                <a href="register.html" class="btn-nav-primary">Get Started</a>
+            <div class="navbar-actions" id="nav-auth-actions">
+                <a href="login.html" class="btn-outline-sm">Sign In</a>
+                <a href="register.html" class="btn-primary-sm">Create Account</a>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- Background Glows -->
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
-    <div class="bg-shape shape-3"></div>
-
-    <!-- Main Showcase Container -->
-    <div class="landing-container">
+    <!-- Main Container -->
+    <main class="app-container" style="margin-top: 100px;">
         
         <!-- HERO SECTION -->
-        <section class="hero-section">
-            <div class="hero-pill">
-                <i data-lucide="shield-alert"></i> Enterprise-Grade Identity & Access Management (IAM)
+        <section style="text-align: center; padding: 40px 0 60px;">
+            <div class="brand-badge" style="display: inline-block; margin-bottom: 20px;">
+                <i class="bi bi-shield-check"></i> Enterprise Identity & Access Management (IAM)
             </div>
-            <h1 class="hero-title">
-                Next-Gen Authentication & <span class="hero-gradient">Role-Based Access Control</span>
+            <h1 style="font-size: 46px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; max-width: 860px; margin: 0 auto 18px;">
+                Production-Grade Authentication & <span style="background: linear-gradient(135deg, #a5b4fc, #c084fc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Role-Based Access Control</span>
             </h1>
-            <p class="hero-subtitle">
+            <p class="text-muted" style="font-size: 16px; max-width: 700px; margin: 0 auto 36px; line-height: 1.6;">
                 A hardened, full-stack identity architecture engineered with <strong>Node.js, Express, MongoDB Atlas, Bcrypt, JWT, and Nodemailer</strong>. Featuring multi-tier RBAC, brute-force defense, cryptographic OTP recovery, and real-time security auditing.
             </p>
 
-            <div class="hero-cta-group">
-                <a href="login.html" class="btn-hero-primary">
-                    <i data-lucide="log-in"></i> Sign In to Account
+            <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px;">
+                <a href="login.html" class="btn-primary-sm" style="padding: 12px 24px; font-size: 15px;">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In to Account
                 </a>
-                <a href="register.html" class="btn-hero-secondary">
-                    <i data-lucide="user-plus"></i> Create Account
+                <a href="register.html" class="btn-outline-sm" style="padding: 12px 24px; font-size: 15px;">
+                    <i class="bi bi-person-plus"></i> Create Account
                 </a>
-                <a href="docs.html" class="btn-hero-secondary">
-                    <i data-lucide="terminal"></i> Live API Docs
+                <a href="docs.html" class="btn-outline-sm" style="padding: 12px 24px; font-size: 15px;">
+                    <i class="bi bi-code-slash"></i> Interactive API Docs
                 </a>
             </div>
 
             <!-- Stats Banner -->
-            <div class="stats-banner">
-                <div class="stat-item">
-                    <h3>256-Bit</h3>
-                    <p>Cryptographic Hashing</p>
+            <div class="kpi-row" style="background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 26px; font-weight: 800; color: var(--text-primary);">256-Bit</div>
+                    <div class="text-muted small">Cryptographic Hashing</div>
                 </div>
-                <div class="stat-item">
-                    <h3>10 Mins</h3>
-                    <p>OTP Expiration TTL</p>
+                <div style="text-align: center;">
+                    <div style="font-size: 26px; font-weight: 800; color: var(--text-primary);">10 Mins</div>
+                    <div class="text-muted small">OTP Expiration TTL</div>
                 </div>
-                <div class="stat-item">
-                    <h3>5 Attempts</h3>
-                    <p>Brute-Force Lockout</p>
+                <div style="text-align: center;">
+                    <div style="font-size: 26px; font-weight: 800; color: var(--text-primary);">5 Attempts</div>
+                    <div class="text-muted small">Brute-Force Lockout</div>
                 </div>
-                <div class="stat-item">
-                    <h3>&lt; 50ms</h3>
-                    <p>Stateless JWT Auth</p>
+                <div style="text-align: center;">
+                    <div style="font-size: 26px; font-weight: 800; color: var(--text-primary);">&lt; 50ms</div>
+                    <div class="text-muted small">Stateless Bearer JWT</div>
                 </div>
             </div>
         </section>
 
         <!-- FEATURES SECTION -->
-        <section id="features" style="padding-top: 40px;">
-            <div class="section-head">
-                <h2>Engineered for Enterprise Defense</h2>
-                <p>Comprehensive security layers protecting user identities from modern threat vectors</p>
+        <section id="features" style="padding: 30px 0 50px;">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h2 style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px;">Engineered for Enterprise Defense</h2>
+                <p class="text-muted">Comprehensive architectural layers safeguarding credentials against modern attack vectors</p>
             </div>
 
-            <div class="features-grid">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;">
                 <!-- Feature 1 -->
-                <div class="feat-card">
-                    <div class="feat-icon"><i data-lucide="crown"></i></div>
-                    <h3>Role-Based Access Control (RBAC)</h3>
-                    <p>Granular access separation between Standard Users and Administrators with real-time role promotion, status suspension, and user management.</p>
+                <div class="surface-card" style="margin-bottom: 0;">
+                    <div class="brand-icon" style="margin-bottom: 16px;"><i class="bi bi-shield-lock-fill"></i></div>
+                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Role-Based Access Control (RBAC)</h3>
+                    <p class="text-muted small">Strict segregation between Standard Users and Administrators with dedicated role middleware, administrative user directory, and status toggles.</p>
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="feat-card">
-                    <div class="feat-icon"><i data-lucide="key-round"></i></div>
-                    <h3>Cryptographic OTP Reset</h3>
-                    <p>High-speed SSL direct email delivery (Gmail SMTP port 465) with single-use replay attack wipe defense and 60-second cooldown timers.</p>
+                <div class="surface-card" style="margin-bottom: 0;">
+                    <div class="brand-icon" style="margin-bottom: 16px;"><i class="bi bi-key-fill"></i></div>
+                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Cryptographic OTP Reset</h3>
+                    <p class="text-muted small">High-speed direct SSL email dispatch (Gmail SMTP port 465) with single-use replay attack wipe defense and 60-second cooldown timers.</p>
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="feat-card">
-                    <div class="feat-icon"><i data-lucide="shield-ban"></i></div>
-                    <h3>Brute-Force & Lockout Defense</h3>
-                    <p>Adaptive attempt tracking invalidates OTP after 5 incorrect guesses, and locks user accounts for 15 minutes after 5 consecutive failed login attempts.</p>
+                <div class="surface-card" style="margin-bottom: 0;">
+                    <div class="brand-icon" style="margin-bottom: 16px;"><i class="bi bi-shield-slash-fill"></i></div>
+                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Brute-Force & Lockout Defense</h3>
+                    <p class="text-muted small">Adaptive attempt tracking invalidates OTP after 5 incorrect guesses, and locks user accounts for 15 minutes after 5 consecutive failed login attempts.</p>
                 </div>
 
                 <!-- Feature 4 -->
-                <div class="feat-card">
-                    <div class="feat-icon"><i data-lucide="zap"></i></div>
-                    <h3>Stateless JWT Bearer Auth</h3>
-                    <p>Signed JSON Web Tokens carrying user claims for stateless API consumption with 24-hour expiration and instant cryptographic validation.</p>
+                <div class="surface-card" style="margin-bottom: 0;">
+                    <div class="brand-icon" style="margin-bottom: 16px;"><i class="bi bi-lightning-charge-fill"></i></div>
+                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Stateless JWT Verification</h3>
+                    <p class="text-muted small">Signed JSON Web Tokens carrying role and identity claims for stateless REST API consumption with 24-hour expiration and instant validation.</p>
                 </div>
 
                 <!-- Feature 5 -->
-                <div class="feat-card">
-                    <div class="feat-icon"><i data-lucide="layers"></i></div>
-                    <h3>Multi-Tier HTTP Hardening</h3>
-                    <p>Tiered <code>express-rate-limit</code> across general, auth, and OTP endpoints, Helmet Content Security Policies, and strict NoSQL injection guards.</p>
+                <div class="surface-card" style="margin-bottom: 0;">
+                    <div class="brand-icon" style="margin-bottom: 16px;"><i class="bi bi-layers-fill"></i></div>
+                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Multi-Tier HTTP Hardening</h3>
+                    <p class="text-muted small">Tiered rate limiting via <code>express-rate-limit</code> across general, auth, and OTP endpoints, Helmet Content Security Policies, and strict NoSQL injection guards.</p>
                 </div>
 
                 <!-- Feature 6 -->
-                <div class="feat-card">
-                    <div class="feat-icon"><i data-lucide="history"></i></div>
-                    <h3>Security Audit & Sessions</h3>
-                    <p>Live client IP logging, browser/device detection, active session tracking, and a global administrative audit trail for compliance.</p>
+                <div class="surface-card" style="margin-bottom: 0;">
+                    <div class="brand-icon" style="margin-bottom: 16px;"><i class="bi bi-clock-history"></i></div>
+                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Observability & Audit Trail</h3>
+                    <p class="text-muted small">Real-time client IP logging, browser/device detection, active session tracking, and a global administrative audit trail for compliance.</p>
                 </div>
             </div>
         </section>
 
         <!-- ARCHITECTURE WORKFLOW -->
-        <section id="architecture" style="padding-top: 30px;">
-            <div class="section-head">
-                <h2>Security Architecture Flow</h2>
-                <p>How an incoming authentication request is validated across security boundaries</p>
+        <section id="architecture" style="padding: 20px 0 50px;">
+            <div style="text-align: center; margin-bottom: 36px;">
+                <h2 style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px;">Security Architecture Pipeline</h2>
+                <p class="text-muted">How authentication requests traverse security boundaries</p>
             </div>
 
-            <div class="arch-flow-grid">
-                <div class="arch-node">
-                    <div class="arch-node-number">1</div>
-                    <h4>Perimeter Defense</h4>
-                    <p>Helmet HTTP headers, CORS policies, and multi-tier rate limiting evaluate incoming request rate and headers.</p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
+                <div class="kpi-tile" style="padding: 20px;">
+                    <div class="fw-semibold text-primary" style="margin-bottom: 6px;">01. Perimeter Defense</div>
+                    <p class="text-muted small">Helmet HTTP security headers, CORS policies, and rate-limiting evaluate incoming request rates.</p>
                 </div>
 
-                <div class="arch-node">
-                    <div class="arch-node-number">2</div>
-                    <h4>Input Sanitization</h4>
-                    <p>Strict type validation, length capping (128 char max for passwords to prevent ReDoS), and NoSQL operator rejection.</p>
+                <div class="kpi-tile" style="padding: 20px;">
+                    <div class="fw-semibold text-primary" style="margin-bottom: 6px;">02. Input Sanitization</div>
+                    <p class="text-muted small">Strict type validation, length capping (128 chars max for passwords), and NoSQL operator rejection.</p>
                 </div>
 
-                <div class="arch-node">
-                    <div class="arch-node-number">3</div>
-                    <h4>Cryptographic Engine</h4>
-                    <p>Bcrypt salted hashing (10 rounds) verifies credentials. Lockout tracker monitors attempt limits in real-time.</p>
+                <div class="kpi-tile" style="padding: 20px;">
+                    <div class="fw-semibold text-primary" style="margin-bottom: 6px;">03. Cryptographic Engine</div>
+                    <p class="text-muted small">Bcrypt salted hashing (10 rounds) verifies credentials. Lockout tracker monitors attempt limits in real-time.</p>
                 </div>
 
-                <div class="arch-node">
-                    <div class="arch-node-number">4</div>
-                    <h4>Token Issuance</h4>
-                    <p>Stateless JWT signed with role claims. Database records audit log and returns authorized session.</p>
+                <div class="kpi-tile" style="padding: 20px;">
+                    <div class="fw-semibold text-primary" style="margin-bottom: 6px;">04. Token & Audit</div>
+                    <p class="text-muted small">Stateless JWT signed with role claims. Database records audit log and returns authorized session.</p>
                 </div>
             </div>
         </section>
 
-        <!-- QUICK ACCESS EVALUATION DEMO BANNER -->
-        <div class="content-box" style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)); border-color: rgba(99, 102, 241, 0.3);">
-            <h2 style="font-size: 26px; font-weight: 800; margin-bottom: 10px;">Ready for Evaluation & Viva Demonstration?</h2>
-            <p style="color: var(--text-muted); font-size: 15px; max-width: 600px; margin: 0 auto 24px;">
+        <!-- EVALUATOR CALLOUT CARD -->
+        <div class="surface-card" style="text-align: center; padding: 40px 20px; background: rgba(99, 102, 241, 0.04); border-color: rgba(99, 102, 241, 0.25); margin-bottom: 40px;">
+            <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 8px;">Ready for Evaluation & Viva Demonstration?</h2>
+            <p class="text-muted small" style="max-width: 600px; margin: 0 auto 24px;">
                 Experience the complete user lifecycle, test role segregation with 1-click demo logins, or execute live calls via the interactive API documentation.
             </p>
-            <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-                <a href="login.html" class="btn-hero-primary"><i data-lucide="log-in"></i> Sign In to Demo</a>
-                <a href="dashboard.html" class="btn-hero-secondary"><i data-lucide="user"></i> User Dashboard</a>
-                <a href="admin.html" class="btn-hero-secondary" style="border-color: rgba(168, 85, 247, 0.4); color: #d8b4fe;"><i data-lucide="crown"></i> Admin Portal</a>
-                <a href="docs.html" class="btn-hero-secondary"><i data-lucide="book-open"></i> API Documentation</a>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a href="login.html" class="btn-primary-sm" style="padding: 10px 20px;"><i class="bi bi-box-arrow-in-right"></i> Sign In to Demo</a>
+                <a href="dashboard.html" class="btn-outline-sm" style="padding: 10px 20px;"><i class="bi bi-person"></i> User Dashboard</a>
+                <a href="admin.html" class="btn-outline-sm text-warning" style="padding: 10px 20px;"><i class="bi bi-shield-lock-fill"></i> Admin Portal</a>
+                <a href="docs.html" class="btn-outline-sm" style="padding: 10px 20px;"><i class="bi bi-book"></i> API Documentation</a>
             </div>
         </div>
 
-        <!-- FOOTER -->
-        <footer style="text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--card-border); color: var(--text-dim); font-size: 13px;">
-            <p>SecureAuth &copy; 2026. Built with Node.js, Express, MongoDB Atlas, JWT, and Bcrypt.</p>
+        <footer style="text-align: center; padding-top: 20px; border-top: 1px solid var(--border-subtle); color: var(--text-tertiary); font-size: 12px; margin-bottom: 30px;">
+            <p>SecureAuth Platform &copy; 2026. Built with Node.js, Express, MongoDB Atlas, JWT, and Bcrypt.</p>
         </footer>
 
-    </div>
+    </main>
 
-    <script src="auth-helper.js"></script>
-    <script>
-        lucide.createIcons();
-
-        // Check if user is already logged in
-        const user = getAuthUser();
-        const token = getAuthToken();
-
-        if (user && token) {
-            const navAuth = document.getElementById('nav-auth-actions');
-            navAuth.innerHTML = `
-                <a href="${user.role === 'admin' ? 'admin.html' : 'dashboard.html'}" class="btn-nav-primary">
-                    <i data-lucide="${user.role === 'admin' ? 'crown' : 'user'}"></i> 
-                    ${user.name} (${user.role.toUpperCase()})
-                </a>
-            `;
-            if (window.lucide) lucide.createIcons();
-        }
-    </script>
+    <!-- Modular Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/pages/landing.js"></script>
 </body>
 </html>

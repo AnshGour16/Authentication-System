@@ -7,339 +7,234 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="landing-body">
-    <!-- Navbar -->
-    <header class="app-nav">
-        <div class="nav-container">
-            <a href="index.html" class="nav-brand">
-                <div class="logo-icon"><i data-lucide="shield-check"></i></div>
-                <span>SecureAuth <small style="font-size: 12px; color: var(--primary-light); font-weight: 500;">API DOCS v1.0</small></span>
+<body>
+    <!-- Top Global Navbar -->
+    <nav class="navbar" aria-label="Main Navigation">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <div class="brand-icon"><i class="bi bi-shield-check"></i></div>
+                <span>SecureAuth <span class="brand-badge">API Docs</span></span>
             </a>
-            <div class="nav-actions">
-                <a href="login.html" class="btn-nav-outline">Sign In</a>
-                <a href="dashboard.html" class="btn-nav-primary">My Portal</a>
+            <div class="navbar-actions">
+                <a href="login.html" class="btn-outline-sm">Sign In</a>
+                <a href="dashboard.html" class="btn-primary-sm">User Portal</a>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- Background Glows -->
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
-    <div class="bg-shape shape-3"></div>
-
-    <!-- Toast Notifications Container -->
-    <div id="toast-container" class="toast-container"></div>
-
-    <div class="docs-container">
+    <!-- Main Container -->
+    <main class="app-container">
         
-        <!-- Header -->
-        <div style="margin-bottom: 30px;">
-            <span class="hero-pill"><i data-lucide="code-2"></i> RESTful OpenAPI Specification</span>
-            <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-top: 10px;">Interactive API Reference & Live Tester</h1>
-            <p style="color: var(--text-muted); font-size: 15px; margin-top: 6px; max-width: 800px;">
-                Complete documentation for all Public, Protected (Bearer JWT), and RBAC Admin endpoints. Click any endpoint below to inspect request/response schemas or execute live calls.
+        <header style="margin-bottom: 28px;">
+            <div class="brand-badge" style="display: inline-block; margin-bottom: 10px;">OpenAPI v3.0 REST Specification</div>
+            <h1 style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Interactive API Console</h1>
+            <p class="text-muted small" style="max-width: 750px; margin-top: 4px;">
+                Complete endpoint reference for Public, Bearer-Protected, and RBAC Administrator operations. Test endpoints live against the running backend engine.
             </p>
-        </div>
+        </header>
 
-        <!-- Token Header Setter Box -->
-        <div class="content-box" style="padding: 20px; margin-bottom: 30px; background: rgba(99, 102, 241, 0.08); border-color: rgba(99, 102, 241, 0.3);">
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <!-- Global Token Injector Card -->
+        <div class="surface-card" style="padding: 16px 20px; background: rgba(99, 102, 241, 0.05); border-color: rgba(99, 102, 241, 0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
                 <div>
-                    <strong style="color: var(--primary-light); font-size: 14px;"><i data-lucide="key" style="width: 16px; height: 16px; vertical-align: -2px;"></i> Active Bearer Authorization Token</strong>
-                    <p style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">This token will be automatically attached to all protected API calls below.</p>
+                    <strong class="text-primary small font-monospace"><i class="bi bi-key-fill"></i> Authorization Header Token</strong>
+                    <div class="text-muted small">Token is automatically attached as <code>Authorization: Bearer &lt;token&gt;</code> for protected requests.</div>
                 </div>
-                <button type="button" id="use-current-token-btn" class="btn-action-sm" style="background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.4); color: #fff;">
-                    <i data-lucide="check"></i> Auto-Populate from Active Session
+                <button type="button" id="btn-auto-populate-token" class="btn-outline-sm">
+                    <i class="bi bi-check-lg"></i> Attach Active Session Token
                 </button>
             </div>
-            <div class="input-wrapper" style="margin-top: 10px;">
-                <input type="text" id="global-bearer-token" placeholder="Paste your JWT Bearer token here or click 'Auto-Populate'..." style="font-family: monospace; font-size: 12px;">
+            <div class="input-container">
+                <input type="text" id="docs-bearer-token" class="form-input font-monospace small" placeholder="Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
             </div>
         </div>
 
-        <!-- CATEGORY 1: AUTHENTICATION & RECOVERY -->
-        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-            <i data-lucide="lock" style="color: var(--primary-light);"></i> 1. Public Authentication & Lifecycle
-        </h2>
+        <!-- CATEGORY 1: PUBLIC AUTH -->
+        <div class="fw-semibold small text-primary" style="margin: 28px 0 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+            <i class="bi bi-unlock"></i> 1. Public Authentication Lifecycle
+        </div>
 
-        <!-- Endpoint: POST /api/auth/register -->
-        <div class="endpoint-card">
-            <div class="endpoint-header" onclick="toggleEndpoint('ep-register')">
-                <div class="endpoint-signature">
-                    <span class="method-tag method-post">POST</span>
-                    <strong>/api/auth/register</strong>
-                    <span style="color: var(--text-dim); font-size: 12px;">Register user with bcrypt salted hashing</span>
+        <!-- POST /api/auth/register -->
+        <article class="endpoint-card">
+            <div class="endpoint-summary" onclick="toggleEndpointCard('ep-card-register')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="method-badge method-post">POST</span>
+                    <strong class="font-monospace small">/api/auth/register</strong>
+                    <span class="text-muted small">Create user account with salted password hashing</span>
                 </div>
-                <i data-lucide="chevron-down"></i>
+                <i class="bi bi-chevron-down text-muted"></i>
             </div>
-            <div class="endpoint-body hidden" id="ep-register">
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">Creates a new user record in MongoDB Atlas. Supports standard "user" and "admin" roles.</p>
-                <div style="font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px;">Request Body (JSON):</div>
-                <textarea id="body-register" style="width: 100%; height: 90px; background: #05070d; border: 1px solid var(--card-border); border-radius: 6px; color: #7dd3fc; font-family: monospace; padding: 10px; font-size: 12px;">{
+            <div id="ep-card-register" class="d-none" style="padding: 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+                <div class="form-label">Request Body (application/json)</div>
+                <textarea id="body-req-register" class="code-console" style="width: 100%; height: 95px; margin-bottom: 10px;">{
   "name": "Jane Examiner",
-  "email": "jane@evaluation.com",
+  "email": "examiner@demo.com",
   "password": "Password123!",
   "role": "user"
 }</textarea>
-                <button type="button" class="btn-hero-primary" style="margin-top: 10px; padding: 6px 16px; font-size: 12px;" onclick="runApiCall('/api/auth/register', 'POST', 'body-register', 'res-register', false)">
-                    <i data-lucide="play"></i> Send Request
+                <button type="button" class="btn-primary-sm" onclick="executeApiCall('/api/auth/register', 'POST', 'body-req-register', 'res-output-register', false)">
+                    <i class="bi bi-play-fill"></i> Send Request
                 </button>
-                <pre class="json-view-pre hidden" id="res-register" style="margin-top: 10px;"></pre>
+                <pre id="res-output-register" class="code-console d-none" style="margin-top: 10px;"></pre>
             </div>
-        </div>
+        </article>
 
-        <!-- Endpoint: POST /api/auth/login -->
-        <div class="endpoint-card">
-            <div class="endpoint-header" onclick="toggleEndpoint('ep-login')">
-                <div class="endpoint-signature">
-                    <span class="method-tag method-post">POST</span>
-                    <strong>/api/auth/login</strong>
-                    <span style="color: var(--text-dim); font-size: 12px;">Authenticate credentials & receive 24h JWT</span>
+        <!-- POST /api/auth/login -->
+        <article class="endpoint-card">
+            <div class="endpoint-summary" onclick="toggleEndpointCard('ep-card-login')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="method-badge method-post">POST</span>
+                    <strong class="font-monospace small">/api/auth/login</strong>
+                    <span class="text-muted small">Authenticate credentials with brute-force lockout defense</span>
                 </div>
-                <i data-lucide="chevron-down"></i>
+                <i class="bi bi-chevron-down text-muted"></i>
             </div>
-            <div class="endpoint-body hidden" id="ep-login">
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">Verifies password, increments lockout counter on failure (locks for 15m after 5 tries), and returns signed token.</p>
-                <div style="font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px;">Request Body (JSON):</div>
-                <textarea id="body-login" style="width: 100%; height: 80px; background: #05070d; border: 1px solid var(--card-border); border-radius: 6px; color: #7dd3fc; font-family: monospace; padding: 10px; font-size: 12px;">{
+            <div id="ep-card-login" class="d-none" style="padding: 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+                <div class="form-label">Request Body (application/json)</div>
+                <textarea id="body-req-login" class="code-console" style="width: 100%; height: 80px; margin-bottom: 10px;">{
   "email": "admin@demo.com",
   "password": "AdminPass123!"
 }</textarea>
-                <button type="button" class="btn-hero-primary" style="margin-top: 10px; padding: 6px 16px; font-size: 12px;" onclick="runApiCall('/api/auth/login', 'POST', 'body-login', 'res-login', false)">
-                    <i data-lucide="play"></i> Send Request
+                <button type="button" class="btn-primary-sm" onclick="executeApiCall('/api/auth/login', 'POST', 'body-req-login', 'res-output-login', false)">
+                    <i class="bi bi-play-fill"></i> Send Request
                 </button>
-                <pre class="json-view-pre hidden" id="res-login" style="margin-top: 10px;"></pre>
+                <pre id="res-output-login" class="code-console d-none" style="margin-top: 10px;"></pre>
             </div>
-        </div>
+        </article>
 
-        <!-- Endpoint: POST /api/auth/forgot-password -->
-        <div class="endpoint-card">
-            <div class="endpoint-header" onclick="toggleEndpoint('ep-forgot')">
-                <div class="endpoint-signature">
-                    <span class="method-tag method-post">POST</span>
-                    <strong>/api/auth/forgot-password</strong>
-                    <span style="color: var(--text-dim); font-size: 12px;">Request 6-digit OTP via SSL Nodemailer</span>
+        <!-- POST /api/auth/forgot-password -->
+        <article class="endpoint-card">
+            <div class="endpoint-summary" onclick="toggleEndpointCard('ep-card-forgot')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="method-badge method-post">POST</span>
+                    <strong class="font-monospace small">/api/auth/forgot-password</strong>
+                    <span class="text-muted small">Generate cryptographic 6-digit OTP code (10m TTL)</span>
                 </div>
-                <i data-lucide="chevron-down"></i>
+                <i class="bi bi-chevron-down text-muted"></i>
             </div>
-            <div class="endpoint-body hidden" id="ep-forgot">
-                <div style="font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px;">Request Body (JSON):</div>
-                <textarea id="body-forgot" style="width: 100%; height: 60px; background: #05070d; border: 1px solid var(--card-border); border-radius: 6px; color: #7dd3fc; font-family: monospace; padding: 10px; font-size: 12px;">{
+            <div id="ep-card-forgot" class="d-none" style="padding: 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+                <div class="form-label">Request Body (application/json)</div>
+                <textarea id="body-req-forgot" class="code-console" style="width: 100%; height: 65px; margin-bottom: 10px;">{
   "email": "user@demo.com"
 }</textarea>
-                <button type="button" class="btn-hero-primary" style="margin-top: 10px; padding: 6px 16px; font-size: 12px;" onclick="runApiCall('/api/auth/forgot-password', 'POST', 'body-forgot', 'res-forgot', false)">
-                    <i data-lucide="play"></i> Send Request
+                <button type="button" class="btn-primary-sm" onclick="executeApiCall('/api/auth/forgot-password', 'POST', 'body-req-forgot', 'res-output-forgot', false)">
+                    <i class="bi bi-play-fill"></i> Send Request
                 </button>
-                <pre class="json-view-pre hidden" id="res-forgot" style="margin-top: 10px;"></pre>
+                <pre id="res-output-forgot" class="code-console d-none" style="margin-top: 10px;"></pre>
             </div>
-        </div>
+        </article>
 
         <!-- CATEGORY 2: PROTECTED USER ENDPOINTS -->
-        <h2 style="font-size: 20px; font-weight: 700; margin: 34px 0 16px; display: flex; align-items: center; gap: 8px;">
-            <i data-lucide="shield-check" style="color: #10b981;"></i> 2. Protected User Endpoints (JWT Bearer Required)
-        </h2>
-
-        <!-- Endpoint: GET /api/auth/profile -->
-        <div class="endpoint-card">
-            <div class="endpoint-header" onclick="toggleEndpoint('ep-profile')">
-                <div class="endpoint-signature">
-                    <span class="method-tag method-get">GET</span>
-                    <strong>/api/auth/profile</strong>
-                    <span style="color: var(--text-dim); font-size: 12px;">Retrieve authenticated user's profile</span>
-                </div>
-                <i data-lucide="chevron-down"></i>
-            </div>
-            <div class="endpoint-body hidden" id="ep-profile">
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">Decodes token claims, validates ObjectId, and returns name, email, role, and last login metadata.</p>
-                <button type="button" class="btn-hero-primary" style="padding: 6px 16px; font-size: 12px;" onclick="runApiCall('/api/auth/profile', 'GET', null, 'res-profile', true)">
-                    <i data-lucide="play"></i> Send Request
-                </button>
-                <pre class="json-view-pre hidden" id="res-profile" style="margin-top: 10px;"></pre>
-            </div>
+        <div class="fw-semibold small text-success" style="margin: 28px 0 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+            <i class="bi bi-shield-check"></i> 2. Protected User Endpoints (Bearer Required)
         </div>
 
-        <!-- Endpoint: PUT /api/auth/profile -->
-        <div class="endpoint-card">
-            <div class="endpoint-header" onclick="toggleEndpoint('ep-put-profile')">
-                <div class="endpoint-signature">
-                    <span class="method-tag method-put">PUT</span>
-                    <strong>/api/auth/profile</strong>
-                    <span style="color: var(--text-dim); font-size: 12px;">Update display name</span>
+        <!-- GET /api/auth/profile -->
+        <article class="endpoint-card">
+            <div class="endpoint-summary" onclick="toggleEndpointCard('ep-card-profile')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="method-badge method-get">GET</span>
+                    <strong class="font-monospace small">/api/auth/profile</strong>
+                    <span class="text-muted small">Retrieve authenticated user identity metadata</span>
                 </div>
-                <i data-lucide="chevron-down"></i>
+                <i class="bi bi-chevron-down text-muted"></i>
             </div>
-            <div class="endpoint-body hidden" id="ep-put-profile">
-                <div style="font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px;">Request Body (JSON):</div>
-                <textarea id="body-put-profile" style="width: 100%; height: 60px; background: #05070d; border: 1px solid var(--card-border); border-radius: 6px; color: #7dd3fc; font-family: monospace; padding: 10px; font-size: 12px;">{
-  "name": "Jane Examiner (Updated)"
-}</textarea>
-                <button type="button" class="btn-hero-primary" style="margin-top: 10px; padding: 6px 16px; font-size: 12px;" onclick="runApiCall('/api/auth/profile', 'PUT', 'body-put-profile', 'res-put-profile', true)">
-                    <i data-lucide="play"></i> Send Request
+            <div id="ep-card-profile" class="d-none" style="padding: 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+                <button type="button" class="btn-primary-sm" onclick="executeApiCall('/api/auth/profile', 'GET', null, 'res-output-profile', true)">
+                    <i class="bi bi-play-fill"></i> Send Request
                 </button>
-                <pre class="json-view-pre hidden" id="res-put-profile" style="margin-top: 10px;"></pre>
+                <pre id="res-output-profile" class="code-console d-none" style="margin-top: 10px;"></pre>
             </div>
+        </article>
+
+        <!-- GET /api/auth/sessions -->
+        <article class="endpoint-card">
+            <div class="endpoint-summary" onclick="toggleEndpointCard('ep-card-sessions')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="method-badge method-get">GET</span>
+                    <strong class="font-monospace small">/api/auth/sessions</strong>
+                    <span class="text-muted small">Query active IP, client device, and login audit log</span>
+                </div>
+                <i class="bi bi-chevron-down text-muted"></i>
+            </div>
+            <div id="ep-card-sessions" class="d-none" style="padding: 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+                <button type="button" class="btn-primary-sm" onclick="executeApiCall('/api/auth/sessions', 'GET', null, 'res-output-sessions', true)">
+                    <i class="bi bi-play-fill"></i> Send Request
+                </button>
+                <pre id="res-output-sessions" class="code-console d-none" style="margin-top: 10px;"></pre>
+            </div>
+        </article>
+
+        <!-- CATEGORY 3: ADMIN ENDPOINTS -->
+        <div class="fw-semibold small text-warning" style="margin: 28px 0 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+            <i class="bi bi-shield-lock"></i> 3. Administrative RBAC Operations (Role: 'admin')
         </div>
 
-        <!-- Endpoint: GET /api/auth/sessions -->
-        <div class="endpoint-card">
-            <div class="endpoint-header" onclick="toggleEndpoint('ep-sessions')">
-                <div class="endpoint-signature">
-                    <span class="method-tag method-get">GET</span>
-                    <strong>/api/auth/sessions</strong>
-                    <span style="color: var(--text-dim); font-size: 12px;">Get current session IP, device & recent audit history</span>
+        <!-- GET /api/admin/stats -->
+        <article class="endpoint-card">
+            <div class="endpoint-summary" onclick="toggleEndpointCard('ep-card-admin-stats')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="method-badge method-get">GET</span>
+                    <strong class="font-monospace small">/api/admin/stats</strong>
+                    <span class="text-muted small">System KPI metrics (Total, active, locked, new 24h)</span>
                 </div>
-                <i data-lucide="chevron-down"></i>
+                <i class="bi bi-chevron-down text-muted"></i>
             </div>
-            <div class="endpoint-body hidden" id="ep-sessions">
-                <button type="button" class="btn-hero-primary" style="padding: 6px 16px; font-size: 12px;" onclick="runApiCall('/api/auth/sessions', 'GET', null, 'res-sessions', true)">
-                    <i data-lucide="play"></i> Send Request
+            <div id="ep-card-admin-stats" class="d-none" style="padding: 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+                <button type="button" class="btn-primary-sm" onclick="executeApiCall('/api/admin/stats', 'GET', null, 'res-output-admin-stats', true)">
+                    <i class="bi bi-play-fill"></i> Send Request
                 </button>
-                <pre class="json-view-pre hidden" id="res-sessions" style="margin-top: 10px;"></pre>
+                <pre id="res-output-admin-stats" class="code-console d-none" style="margin-top: 10px;"></pre>
             </div>
-        </div>
+        </article>
 
-        <!-- CATEGORY 3: ADMIN & RBAC ENDPOINTS -->
-        <h2 style="font-size: 20px; font-weight: 700; margin: 34px 0 16px; display: flex; align-items: center; gap: 8px;">
-            <i data-lucide="crown" style="color: #c084fc;"></i> 3. Administrative RBAC Endpoints (Requires 'admin' Role)
-        </h2>
-
-        <!-- Endpoint: GET /api/admin/stats -->
-        <div class="endpoint-card">
-            <div class="endpoint-header" onclick="toggleEndpoint('ep-admin-stats')">
-                <div class="endpoint-signature">
-                    <span class="method-tag method-get">GET</span>
-                    <strong>/api/admin/stats</strong>
-                    <span style="color: var(--text-dim); font-size: 12px;">System-wide user counts & security metrics</span>
+        <!-- GET /api/admin/users -->
+        <article class="endpoint-card">
+            <div class="endpoint-summary" onclick="toggleEndpointCard('ep-card-admin-users')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="method-badge method-get">GET</span>
+                    <strong class="font-monospace small">/api/admin/users</strong>
+                    <span class="text-muted small">Fetch user directory (supports query ?search=)</span>
                 </div>
-                <i data-lucide="chevron-down"></i>
+                <i class="bi bi-chevron-down text-muted"></i>
             </div>
-            <div class="endpoint-body hidden" id="ep-admin-stats">
-                <button type="button" class="btn-hero-primary" style="padding: 6px 16px; font-size: 12px;" onclick="runApiCall('/api/admin/stats', 'GET', null, 'res-admin-stats', true)">
-                    <i data-lucide="play"></i> Send Request
+            <div id="ep-card-admin-users" class="d-none" style="padding: 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+                <button type="button" class="btn-primary-sm" onclick="executeApiCall('/api/admin/users', 'GET', null, 'res-output-admin-users', true)">
+                    <i class="bi bi-play-fill"></i> Send Request
                 </button>
-                <pre class="json-view-pre hidden" id="res-admin-stats" style="margin-top: 10px;"></pre>
+                <pre id="res-output-admin-users" class="code-console d-none" style="margin-top: 10px;"></pre>
             </div>
-        </div>
+        </article>
 
-        <!-- Endpoint: GET /api/admin/users -->
-        <div class="endpoint-card">
-            <div class="endpoint-header" onclick="toggleEndpoint('ep-admin-users')">
-                <div class="endpoint-signature">
-                    <span class="method-tag method-get">GET</span>
-                    <strong>/api/admin/users</strong>
-                    <span style="color: var(--text-dim); font-size: 12px;">Query full user directory (supports ?search=)</span>
+        <!-- GET /api/admin/audit-logs -->
+        <article class="endpoint-card">
+            <div class="endpoint-summary" onclick="toggleEndpointCard('ep-card-admin-audit')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="method-badge method-get">GET</span>
+                    <strong class="font-monospace small">/api/admin/audit-logs</strong>
+                    <span class="text-muted small">Retrieve system-wide security audit stream</span>
                 </div>
-                <i data-lucide="chevron-down"></i>
+                <i class="bi bi-chevron-down text-muted"></i>
             </div>
-            <div class="endpoint-body hidden" id="ep-admin-users">
-                <button type="button" class="btn-hero-primary" style="padding: 6px 16px; font-size: 12px;" onclick="runApiCall('/api/admin/users', 'GET', null, 'res-admin-users', true)">
-                    <i data-lucide="play"></i> Send Request
+            <div id="ep-card-admin-audit" class="d-none" style="padding: 16px; border-top: 1px solid var(--border-subtle); background: var(--surface-2);">
+                <button type="button" class="btn-primary-sm" onclick="executeApiCall('/api/admin/audit-logs', 'GET', null, 'res-output-admin-audit', true)">
+                    <i class="bi bi-play-fill"></i> Send Request
                 </button>
-                <pre class="json-view-pre hidden" id="res-admin-users" style="margin-top: 10px;"></pre>
+                <pre id="res-output-admin-audit" class="code-console d-none" style="margin-top: 10px;"></pre>
             </div>
-        </div>
+        </article>
 
-        <!-- Endpoint: GET /api/admin/audit-logs -->
-        <div class="endpoint-card">
-            <div class="endpoint-header" onclick="toggleEndpoint('ep-admin-audit')">
-                <div class="endpoint-signature">
-                    <span class="method-tag method-get">GET</span>
-                    <strong>/api/admin/audit-logs</strong>
-                    <span style="color: var(--text-dim); font-size: 12px;">Inspect global security audit trail</span>
-                </div>
-                <i data-lucide="chevron-down"></i>
-            </div>
-            <div class="endpoint-body hidden" id="ep-admin-audit">
-                <button type="button" class="btn-hero-primary" style="padding: 6px 16px; font-size: 12px;" onclick="runApiCall('/api/admin/audit-logs', 'GET', null, 'res-admin-audit', true)">
-                    <i data-lucide="play"></i> Send Request
-                </button>
-                <pre class="json-view-pre hidden" id="res-admin-audit" style="margin-top: 10px;"></pre>
-            </div>
-        </div>
+    </main>
 
-    </div>
-
-    <script src="auth-helper.js"></script>
-    <script>
-        lucide.createIcons();
-
-        // Populate Token
-        const tokenInput = document.getElementById('global-bearer-token');
-        const activeToken = getAuthToken();
-        if (activeToken) tokenInput.value = activeToken;
-
-        document.getElementById('use-current-token-btn').addEventListener('click', () => {
-            const t = getAuthToken();
-            if (t) {
-                tokenInput.value = t;
-                showToast('Token populated from current session!', 'success');
-            } else {
-                showToast('No active session token found. Please sign in first.', 'error');
-            }
-        });
-
-        // Toggle endpoint cards
-        window.toggleEndpoint = (id) => {
-            const body = document.getElementById(id);
-            if (body) {
-                body.classList.toggle('hidden');
-                if (window.lucide) lucide.createIcons();
-            }
-        };
-
-        // Live API Caller
-        window.runApiCall = async (url, method, bodyInputId, resBoxId, isProtected) => {
-            const resBox = document.getElementById(resBoxId);
-            resBox.classList.remove('hidden');
-            resBox.textContent = `// Dispatching ${method} ${url}...`;
-
-            const headers = { 'Content-Type': 'application/json' };
-            if (isProtected) {
-                const token = tokenInput.value.trim();
-                if (!token) {
-                    resBox.textContent = '// ERROR: This is a protected route. Please provide a Bearer token in the input box above.';
-                    showToast('Token required for protected endpoints', 'error');
-                    return;
-                }
-                headers['Authorization'] = `Bearer ${token}`;
-            }
-
-            let body = undefined;
-            if (bodyInputId) {
-                try {
-                    const raw = document.getElementById(bodyInputId).value;
-                    body = JSON.stringify(JSON.parse(raw));
-                } catch (e) {
-                    resBox.textContent = '// ERROR: Invalid JSON payload in request body textarea.';
-                    showToast('Invalid JSON input', 'error');
-                    return;
-                }
-            }
-
-            try {
-                const startTime = performance.now();
-                const res = await fetch(url, { method, headers, body });
-                const endTime = performance.now();
-                const duration = Math.round(endTime - startTime);
-
-                const data = await res.json();
-                resBox.textContent = `// Response: HTTP ${res.status} ${res.statusText} (${duration}ms)\n` + JSON.stringify(data, null, 2);
-
-                if (res.ok) {
-                    showToast(`${method} ${url} -> ${res.status} OK (${duration}ms)`, 'success');
-                } else {
-                    showToast(`${method} ${url} -> ${res.status} (${data.message || 'Error'})`, 'error');
-                }
-            } catch (err) {
-                resBox.textContent = `// Network/Fetch Error: ${err.message}`;
-                showToast('Failed to connect to endpoint', 'error');
-            }
-        };
-    </script>
+    <!-- Modular Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/pages/docs.js"></script>
 </body>
 </html>

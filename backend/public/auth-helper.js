@@ -152,3 +152,4 @@ function evaluatePasswordStrength(password) {
 
     return { score, label, color, checks };
 }
+
