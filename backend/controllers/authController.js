@@ -84,17 +84,22 @@ const register = async (req, res) => {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Determine role (default: "user"; supports "admin" if explicitly passed for eval demo)
+        const role = (req.body.role && typeof req.body.role === "string" && req.body.role.toLowerCase() === "admin") ? "admin" : "user";
+
         // Save new user in MongoDB
         const newUser = await User.create({
             name: trimmedName,
             email: normalizedEmail,
-            password: hashedPassword
+            password: hashedPassword,
+            role
         });
 
         res.status(201).json({
             success: true,
             message: "User registered successfully",
-            userId: newUser._id
+            userId: newUser._id,
+            role: newUser.role
         });
 
     } catch (error) {
@@ -146,25 +151,87 @@ const login = async (req, res) => {
             });
         }
 
+        // Account Lockout Defense: Check if account is temporarily locked
+        if (user.lockUntil && user.lockUntil > new Date()) {
+            const remainingMinutes = Math.ceil((user.lockUntil.getTime() - Date.now()) / (60 * 1000));
+            return res.status(423).json({
+                success: false,
+                message: `Account is temporarily locked due to multiple failed login attempts. Try again in ${remainingMinutes} minute(s).`,
+                isLocked: true,
+                remainingMinutes
+            });
+        }
+
+        // Account Status Check: Ensure account is active
+        if (user.isActive === false) {
+            return res.status(403).json({
+                success: false,
+                message: "This account has been deactivated by an administrator. Please contact support."
+            });
+        }
+
         // Compare password
         const isPasswordCorrect = await bcrypt.compare(
             password,
             user.password
         );
 
+        const clientIp = req.ip || req.headers["x-forwarded-for"] || "127.0.0.1";
+        const clientDevice = req.headers["user-agent"] ? req.headers["user-agent"].substring(0, 80) : "Browser";
+
         if (!isPasswordCorrect) {
+            user.loginAttempts = (user.loginAttempts || 0) + 1;
+            let message = "Invalid email or password";
+
+            if (user.loginAttempts >= 5) {
+                user.lockUntil = new Date(Date.now() + 15 * 60 * 1000); // 15-minute lock
+                user.loginAttempts = 0;
+                message = "Account locked for 15 minutes due to 5 consecutive failed login attempts.";
+            }
+
+            if (!user.loginHistory) user.loginHistory = [];
+            user.loginHistory.unshift({
+                timestamp: new Date(),
+                ip: clientIp,
+                device: clientDevice,
+                status: "failed"
+            });
+            if (user.loginHistory.length > 10) user.loginHistory = user.loginHistory.slice(0, 10);
+
+            await user.save();
+
             return res.status(401).json({
                 success: false,
-                message: "Invalid email or password"
+                message,
+                attemptsRemaining: user.lockUntil ? 0 : Math.max(0, 5 - user.loginAttempts)
             });
         }
 
-        // Generate JWT Token
+        // Successful Login: Reset lockout counters & log activity
+        user.loginAttempts = 0;
+        user.lockUntil = null;
+        user.lastLogin = new Date();
+        user.lastLoginIp = clientIp;
+        user.lastLoginDevice = clientDevice;
+
+        if (!user.loginHistory) user.loginHistory = [];
+        user.loginHistory.unshift({
+            timestamp: new Date(),
+            ip: clientIp,
+            device: clientDevice,
+            status: "success"
+        });
+        if (user.loginHistory.length > 10) user.loginHistory = user.loginHistory.slice(0, 10);
+
+        await user.save();
+
+        // Generate JWT Token with user role
         const token = jwt.sign(
             {
                 id: user._id,
                 email: user.email,
-                name: user.name
+                name: user.name,
+                role: user.role || "user"
             },
             process.env.JWT_SECRET || "default_secret_key_change_in_production",
             {
@@ -179,7 +246,10 @@ const login = async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                role: user.role || "user",
+                isActive: user.isActive !== false,
+                lastLogin: user.lastLogin
             }
         });
 
@@ -495,12 +565,172 @@ const getProfile = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                created_at: user.createdAt
+                role: user.role || "user",
+                isActive: user.isActive !== false,
+                created_at: user.createdAt,
+                lastLogin: user.lastLogin,
+                lastLoginIp: user.lastLoginIp,
+                lastLoginDevice: user.lastLoginDevice
             }
         });
 
     } catch (error) {
         console.error("Profile Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+// 7. UPDATE PROFILE (PROTECTED ROUTE)
+const updateProfile = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { name } = req.body;
+
+        if (!name || typeof name !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Valid name is required"
+            });
+        }
+
+        const trimmedName = name.trim();
+        if (trimmedName.length === 0 || trimmedName.length > 100) {
+            return res.status(400).json({
+                success: false,
+                message: "Name must be between 1 and 100 characters"
+            });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        user.name = trimmedName;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role || "user"
+            }
+        });
+
+    } catch (error) {
+        console.error("Update Profile Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+// 8. CHANGE PASSWORD (PROTECTED ROUTE)
+const changePassword = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Current password and new password are required"
+            });
+        }
+
+        if (typeof currentPassword !== "string" || typeof newPassword !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid input types"
+            });
+        }
+
+        if (newPassword.length < 6 || newPassword.length > 128) {
+            return res.status(400).json({
+                success: false,
+                message: "New password must be between 6 and 128 characters long"
+            });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        const isCurrentCorrect = await bcrypt.compare(currentPassword, user.password);
+        if (!isCurrentCorrect) {
+            return res.status(401).json({
+                success: false,
+                message: "Current password is incorrect"
+            });
+        }
+
+        const isSame = await bcrypt.compare(newPassword, user.password);
+        if (isSame) {
+            return res.status(400).json({
+                success: false,
+                message: "New password must be different from current password"
+            });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Password changed successfully! Please keep your credentials secure."
+        });
+
+    } catch (error) {
+        console.error("Change Password Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+// 9. GET SESSIONS & AUDIT LOG (PROTECTED ROUTE)
+const getSessions = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId).select("lastLogin lastLoginIp lastLoginDevice loginHistory").lean();
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        const clientIp = req.ip || req.headers["x-forwarded-for"] || "127.0.0.1";
+        const clientDevice = req.headers["user-agent"] ? req.headers["user-agent"].substring(0, 80) : "Browser";
+
+        res.status(200).json({
+            success: true,
+            currentSession: {
+                ip: clientIp,
+                device: clientDevice,
+                activeSince: user.lastLogin || new Date()
+            },
+            history: user.loginHistory || []
+        });
+
+    } catch (error) {
+        console.error("Get Sessions Error:", error);
         res.status(500).json({
             success: false,
             message: "Internal Server Error"
@@ -514,5 +744,8 @@ module.exports = {
     forgotPassword,
     verifyOtp,
     resetPassword,
-    getProfile
+    getProfile,
+    updateProfile,
+    changePassword,
+    getSessions
 };

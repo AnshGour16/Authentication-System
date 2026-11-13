@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — SecureAuth Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="logo-icon"><i data-lucide="shield-check"></i></div>
+                <span>SecureAuth</span>
+            </a>
+            <div class="nav-actions">
+                <a href="docs.html" class="btn-nav-outline"><i data-lucide="book-open"></i> API Docs</a>
+                <a href="register.html" class="btn-nav-primary">Create Account</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Background Glows -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Main Container -->
+    <main class="main-wrapper" style="margin-top: 60px;">
+        <div class="auth-card">
+            
+            <div class="brand-header">
+                <div class="logo-badge">
+                    <i data-lucide="lock"></i>
+                </div>
+                <h1 class="brand-title">Sign In</h1>
+                <p class="brand-subtitle">Enter your credentials to access your session</p>
+            </div>
+
+            <!-- Evaluator Quick Fill Pills -->
+            <div class="evaluator-demo-box">
+                <div class="evaluator-demo-title">
+                    <i data-lucide="sparkles"></i> 1-Click Evaluator Demo Credentials
+                </div>
+                <div class="evaluator-pills">
+                    <button type="button" class="demo-pill demo-pill-admin" id="fill-admin-btn">
+                        <i data-lucide="crown"></i> Fill Admin Demo
+                    </button>
+                    <button type="button" class="demo-pill demo-pill-user" id="fill-user-btn">
+                        <i data-lucide="user"></i> Fill User Demo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lockout Warning Banner -->
+            <div id="lockout-alert" class="dev-banner hidden" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;">
+                <i data-lucide="alert-triangle"></i>
+                <div class="dev-banner-text">
+                    <strong>Account Locked:</strong> <span id="lockout-msg">Multiple failed attempts detected.</span>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-page-form" novalidate>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="mail" class="input-icon"></i>
+                        <input type="email" id="email" placeholder="name@example.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="password">Password</label>
+                        <a href="forgot-password.html" class="text-link">Forgot password?</a>
+                    </div>
+                    <div class="input-wrapper">
+                        <i data-lucide="lock" class="input-icon"></i>
+                        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" class="toggle-password" data-target="password">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn btn-primary" style="margin-top: 10px;">
+                    <span>Sign In to Account</span>
+                    <i data-lucide="arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="back-link-wrapper" style="margin-top: 24px;">
+                <span style="color: var(--text-dim); font-size: 14px;">Don't have an account?</span>
+                <a href="register.html" class="text-link" style="font-weight: 600; margin-left: 6px;">Create one here</a>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="auth-helper.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // 1-Click Demo Credentials
+        document.getElementById('fill-admin-btn').addEventListener('click', () => {
+            document.getElementById('email').value = 'admin@demo.com';
+            document.getElementById('password').value = 'AdminPass123!';
+            showToast('Admin demo credentials populated!', 'info');
+        });
+
+        document.getElementById('fill-user-btn').addEventListener('click', () => {
+            document.getElementById('email').value = 'user@demo.com';
+            document.getElementById('password').value = 'UserPass123!';
+            showToast('Standard user credentials populated!', 'info');
+        });
+
+        // Form Submit
+        const form = document.getElementById('login-page-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const lockoutAlert = document.getElementById('lockout-alert');
+        const lockoutMsg = document.getElementById('lockout-msg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showToast('Please provide both email and password', 'error');
+                return;
+            }
+
+            setBtnLoading(submitBtn, true, 'Verifying...');
+            lockoutAlert.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.status === 423) { // Account Locked
+                    lockoutAlert.classList.remove('hidden');
+                    lockoutMsg.textContent = data.message;
+                    showToast(data.message, 'error');
+                    lucide.createIcons();
+                    return;
+                }
+
+                if (!res.ok) {
+                    if (data.attemptsRemaining !== undefined && data.attemptsRemaining > 0) {
+                        showToast(`${data.message} (${data.attemptsRemaining} attempts left before lockout)`, 'error');
+                    } else {
+                        showToast(data.message || 'Login failed', 'error');
+                    }
+                    return;
+                }
+
+                // Success
+                saveAuthSession(data.token, data.user);
+                showToast(`Welcome back, ${data.user.name}! Redirecting...`, 'success');
+
+                setTimeout(() => {
+                    if (data.user.role === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                }, 1000);
+
+            } catch (err) {
+                console.error(err);
+                showToast('Server connection error. Please try again.', 'error');
+            } finally {
+                setBtnLoading(submitBtn, false, 'Sign In to Account');
+            }
+        });
+    </script>
+</body>
+</html>
+

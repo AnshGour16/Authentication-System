@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const helmet = require("helmet");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const { apiLimiter } = require("./middleware/rateLimiter");
 
 const app = express();
@@ -70,6 +71,15 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+
+// Clean Multi-Page Friendly Routes
+app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "public", "login.html")));
+app.get("/register", (req, res) => res.sendFile(path.join(__dirname, "public", "register.html")));
+app.get("/forgot-password", (req, res) => res.sendFile(path.join(__dirname, "public", "forgot-password.html")));
+app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "public", "dashboard.html")));
+app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
+app.get("/docs", (req, res) => res.sendFile(path.join(__dirname, "public", "docs.html")));
 
 // Health check / DB Test Route
 app.get("/api/health", async (req, res) => {

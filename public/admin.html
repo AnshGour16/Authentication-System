@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal — SecureAuth Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="landing-body">
+    <!-- Global Navbar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="logo-icon" style="background: linear-gradient(135deg, #a855f7, #6366f1);"><i data-lucide="crown"></i></div>
+                <span>SecureAuth <small style="font-size: 12px; color: #d8b4fe; font-weight: 500; margin-left: 4px;">ADMIN PORTAL</small></span>
+            </a>
+            <div class="nav-actions">
+                <a href="dashboard.html" class="btn-nav-outline"><i data-lucide="user"></i> My User Portal</a>
+                <a href="docs.html" class="btn-nav-outline"><i data-lucide="book-open"></i> API Docs</a>
+                <button type="button" id="admin-logout-btn" class="btn-nav-outline" style="color: #fca5a5; border-color: rgba(239, 68, 68, 0.3);">
+                    <i data-lucide="log-out"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Background Glows -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Admin Portal Container -->
+    <div class="landing-container" style="padding-top: 10px;">
+        
+        <!-- Header Banner -->
+        <div style="margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <h1 style="font-size: 30px; font-weight: 800; letter-spacing: -0.5px;">
+                    <i data-lucide="shield" style="color: #a855f7; vertical-align: -2px;"></i> System Administration & RBAC
+                </h1>
+                <p style="color: var(--text-dim); font-size: 14px; margin-top: 4px;">Manage user permissions, security status, and inspect global audit trails</p>
+            </div>
+            <button type="button" id="refresh-admin-btn" class="btn-hero-secondary" style="padding: 10px 18px; font-size: 14px;">
+                <i data-lucide="refresh-cw"></i> Refresh Data
+            </button>
+        </div>
+
+        <!-- KPI Metrics Grid -->
+        <div class="kpi-grid" style="grid-template-columns: repeat(5, 1fr);">
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-label">Total Users</span>
+                    <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--primary-light);">
+                        <i data-lucide="users"></i>
+                    </div>
+                </div>
+                <div class="kpi-val" id="stat-total">0</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-label">Active Users</span>
+                    <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                        <i data-lucide="user-check"></i>
+                    </div>
+                </div>
+                <div class="kpi-val" id="stat-active" style="color: #10b981;">0</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-label">Administrators</span>
+                    <div class="kpi-icon" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">
+                        <i data-lucide="crown"></i>
+                    </div>
+                </div>
+                <div class="kpi-val" id="stat-admins" style="color: #c084fc;">0</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-label">New (24 hrs)</span>
+                    <div class="kpi-icon" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
+                        <i data-lucide="user-plus"></i>
+                    </div>
+                </div>
+                <div class="kpi-val" id="stat-new">0</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-label">Locked Accounts</span>
+                    <div class="kpi-icon" style="background: rgba(239, 68, 68, 0.15); color: #f87171;">
+                        <i data-lucide="lock"></i>
+                    </div>
+                </div>
+                <div class="kpi-val" id="stat-locked" style="color: #f87171;">0</div>
+            </div>
+        </div>
+
+        <!-- User Management Table Section -->
+        <div class="content-box" style="margin-top: 24px;">
+            <div class="box-header">
+                <div>
+                    <h3><i data-lucide="users-cog" style="color: #a855f7;"></i> User Directory & Access Control</h3>
+                    <p style="color: var(--text-dim); font-size: 13px; margin-top: 4px;">Promote/demote roles, deactivate accounts, or remove users</p>
+                </div>
+                <div style="display: flex; gap: 10px; width: 300px;">
+                    <div class="input-wrapper" style="width: 100%;">
+                        <i data-lucide="search" class="input-icon"></i>
+                        <input type="text" id="user-search-input" placeholder="Search by name or email..." style="padding-left: 36px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>User Details</th>
+                            <th>Role</th>
+                            <th>Account Status</th>
+                            <th>Last Active</th>
+                            <th>Registration Date</th>
+                            <th style="text-align: right;">Administrative Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px;">Loading users list...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- System Audit Log Section -->
+        <div class="content-box" style="margin-top: 24px;">
+            <div class="box-header">
+                <h3><i data-lucide="clipboard-list" style="color: #a855f7;"></i> System-Wide Security Audit Trail</h3>
+                <span class="badge-success" style="font-size: 11px;">Real-Time Logging</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User Name</th>
+                            <th>User Email</th>
+                            <th>Role</th>
+                            <th>Client IP</th>
+                            <th>Device</th>
+                            <th>Event Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-table-body">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: var(--text-dim); padding: 30px;">Loading audit events...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="auth-helper.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // Enforce Admin Role
+        const auth = requireAuth(['admin']);
+        if (!auth) throw new Error('Unauthorized');
+
+        const token = auth.token;
+        const currentAdmin = auth.user;
+
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/admin/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok && data.stats) {
+                    document.getElementById('stat-total').textContent = data.stats.totalUsers || 0;
+                    document.getElementById('stat-active').textContent = data.stats.activeUsers || 0;
+                    document.getElementById('stat-admins').textContent = data.stats.adminCount || 0;
+                    document.getElementById('stat-new').textContent = data.stats.newUsers24h || 0;
+                    document.getElementById('stat-locked').textContent = data.stats.lockedUsers || 0;
+                }
+            } catch (err) {
+                console.error('Stats error:', err);
+            }
+        }
+
+        async function fetchUsers(search = '') {
+            const tbody = document.getElementById('users-table-body');
+            try {
+                const url = search ? `/api/admin/users?search=${encodeURIComponent(search)}` : '/api/admin/users';
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#fca5a5; padding:20px;">${data.message || 'Failed to fetch users'}</td></tr>`;
+                    return;
+                }
+
+                if (!data.users || data.users.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-dim); padding:20px;">No users found matching '${search}'.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.users.map(u => {
+                    const isSelf = u.id === currentAdmin.id;
+                    const roleBadgeClass = u.role === 'admin' ? 'role-admin' : 'role-user';
+                    const statusText = u.isLocked ? 'Locked (15m)' : (u.isActive ? 'Active' : 'Suspended');
+                    const statusClass = u.isLocked ? 'status-badge-suspended' : (u.isActive ? 'status-badge-active' : 'status-badge-suspended');
+
+                    return `
+                        <tr>
+                            <td>
+                                <div class="table-user-cell">
+                                    <div class="table-user-avatar">${(u.name || 'U').charAt(0).toUpperCase()}</div>
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-main);">${u.name} ${isSelf ? '<small style="color: #c084fc;">(You)</small>' : ''}</div>
+                                        <div style="font-size: 11px; color: var(--text-dim);">${u.email}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="sidebar-role-badge ${roleBadgeClass}">${(u.role || 'user').toUpperCase()}</span>
+                            </td>
+                            <td>
+                                <span style="padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;" class="${statusClass}">
+                                    ${statusText}
+                                </span>
+                            </td>
+                            <td style="color: var(--text-muted); font-size: 12px;">
+                                ${u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : 'Never'}
+                            </td>
+                            <td style="color: var(--text-dim); font-size: 12px;">
+                                ${new Date(u.createdAt).toLocaleDateString()}
+                            </td>
+                            <td style="text-align: right;">
+                                ${isSelf ? '<span style="font-size: 11px; color: var(--text-dim);">Protected (Current Admin)</span>' : `
+                                    <div class="action-btn-group" style="justify-content: flex-end;">
+                                        <button type="button" class="btn-action-sm" onclick="toggleRole('${u.id}', '${u.role === 'admin' ? 'user' : 'admin'}')">
+                                            ${u.role === 'admin' ? 'Demote to User' : 'Make Admin'}
+                                        </button>
+                                        <button type="button" class="btn-action-sm" onclick="toggleStatus('${u.id}', ${!u.isActive})">
+                                            ${u.isActive ? 'Suspend' : 'Activate'}
+                                        </button>
+                                        <button type="button" class="btn-action-sm btn-action-danger" onclick="deleteUser('${u.id}', '${u.name}')">
+                                            Delete
+                                        </button>
+                                    </div>
+                                `}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                if (window.lucide) lucide.createIcons();
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#fca5a5; padding:20px;">Error loading users</td></tr>`;
+            }
+        }
+
+        async function fetchAuditLogs() {
+            const tbody = document.getElementById('audit-table-body');
+            try {
+                const res = await fetch('/api/admin/audit-logs', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.events || data.events.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-dim); padding:20px;">No recent audit logs available.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.events.map(ev => `
+                    <tr>
+                        <td style="font-size: 12px; color: var(--text-muted);">${new Date(ev.timestamp).toLocaleString()}</td>
+                        <td style="font-weight: 600;">${ev.userName}</td>
+                        <td style="color: var(--text-dim); font-size: 12px;">${ev.userEmail}</td>
+                        <td><span class="sidebar-role-badge ${ev.role === 'admin' ? 'role-admin' : 'role-user'}">${ev.role.toUpperCase()}</span></td>
+                        <td><code>${ev.ip || '127.0.0.1'}</code></td>
+                        <td style="font-size: 12px; color: var(--text-dim);">${ev.device}</td>
+                        <td>
+                            <span class="${ev.status === 'failed' ? 'status-badge-suspended' : 'status-badge-active'}" style="padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                ${ev.status}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#fca5a5; padding:20px;">Error loading audit logs</td></tr>`;
+            }
+        }
+
+        // Action Handlers
+        window.toggleRole = async (userId, newRole) => {
+            if (!confirm(`Are you sure you want to change this user's role to ${newRole.toUpperCase()}?`)) return;
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/role`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ role: newRole })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(data.message, 'success');
+                    fetchUsers(document.getElementById('user-search-input').value);
+                    fetchStats();
+                } else {
+                    showToast(data.message || 'Error updating role', 'error');
+                }
+            } catch (err) {
+                showToast('Server error updating role', 'error');
+            }
+        };
+
+        window.toggleStatus = async (userId, newStatus) => {
+            if (!confirm(`Are you sure you want to ${newStatus ? 'Activate' : 'Suspend'} this account?`)) return;
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ isActive: newStatus })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(data.message, 'success');
+                    fetchUsers(document.getElementById('user-search-input').value);
+                    fetchStats();
+                } else {
+                    showToast(data.message || 'Error updating status', 'error');
+                }
+            } catch (err) {
+                showToast('Server error updating status', 'error');
+            }
+        };
+
+        window.deleteUser = async (userId, userName) => {
+            if (!confirm(`Are you sure you want to permanently DELETE user '${userName}'? This action cannot be undone.`)) return;
+            try {
+                const res = await fetch(`/api/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(data.message, 'success');
+                    fetchUsers(document.getElementById('user-search-input').value);
+                    fetchStats();
+                } else {
+                    showToast(data.message || 'Error deleting user', 'error');
+                }
+            } catch (err) {
+                showToast('Server error deleting user', 'error');
+            }
+        };
+
+        // Search Filter
+        let searchDebounce;
+        document.getElementById('user-search-input').addEventListener('input', (e) => {
+            clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(() => {
+                fetchUsers(e.target.value.trim());
+            }, 300);
+        });
+
+        // Refresh
+        document.getElementById('refresh-admin-btn').addEventListener('click', () => {
+            fetchStats();
+            fetchUsers(document.getElementById('user-search-input').value.trim());
+            fetchAuditLogs();
+            showToast('Admin data refreshed', 'info');
+        });
+
+        // Logout
+        document.getElementById('admin-logout-btn').addEventListener('click', () => {
+            clearAuthSession();
+            showToast('Logged out successfully', 'info');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 800);
+        });
+
+        // Initial Load
+        fetchStats();
+        fetchUsers();
+        fetchAuditLogs();
+    </script>
+</body>
+</html>
+

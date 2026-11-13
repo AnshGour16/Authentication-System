@@ -33,7 +33,44 @@ const userSchema = new mongoose.Schema(
         otpAttempts: {
             type: Number,
             default: 0
-        }
+        },
+        role: {
+            type: String,
+            enum: ["user", "admin"],
+            default: "user"
+        },
+        isActive: {
+            type: Boolean,
+            default: true
+        },
+        loginAttempts: {
+            type: Number,
+            default: 0
+        },
+        lockUntil: {
+            type: Date,
+            default: null
+        },
+        lastLogin: {
+            type: Date,
+            default: null
+        },
+        lastLoginIp: {
+            type: String,
+            default: null
+        },
+        lastLoginDevice: {
+            type: String,
+            default: null
+        },
+        loginHistory: [
+            {
+                timestamp: { type: Date, default: Date.now },
+                ip: { type: String, default: "127.0.0.1" },
+                device: { type: String, default: "Unknown" },
+                status: { type: String, enum: ["success", "failed"], default: "success" }
+            }
+        ]
     },
     {
         timestamps: true

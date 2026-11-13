@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account — SecureAuth Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="app-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="logo-icon"><i data-lucide="shield-check"></i></div>
+                <span>SecureAuth</span>
+            </a>
+            <div class="nav-actions">
+                <a href="docs.html" class="btn-nav-outline"><i data-lucide="book-open"></i> API Docs</a>
+                <a href="login.html" class="btn-nav-primary">Sign In</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Background Glows -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Main Container -->
+    <main class="main-wrapper" style="margin-top: 60px;">
+        <div class="auth-card" style="max-width: 480px;">
+            
+            <div class="brand-header">
+                <div class="logo-badge">
+                    <i data-lucide="user-plus"></i>
+                </div>
+                <h1 class="brand-title">Create Account</h1>
+                <p class="brand-subtitle">Join with role-segregated access & 256-bit security</p>
+            </div>
+
+            <!-- Registration Form -->
+            <form id="register-page-form" novalidate>
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="user" class="input-icon"></i>
+                        <input type="text" id="name" placeholder="John Doe" required autocomplete="name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="mail" class="input-icon"></i>
+                        <input type="email" id="email" placeholder="name@example.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="role">Account Role (Evaluation Mode)</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="shield" class="input-icon"></i>
+                        <select id="role" style="width: 100%; background: transparent; border: none; color: var(--text-main); font-size: 14px; outline: none; cursor: pointer;">
+                            <option value="user" style="background: #0f172a; color: #fff;">Standard User (Dashboard & Security Profile)</option>
+                            <option value="admin" style="background: #0f172a; color: #fff;">Administrator (Full RBAC Admin Portal Access)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="lock" class="input-icon"></i>
+                        <input type="password" id="password" placeholder="Create strong password" required autocomplete="new-password">
+                        <button type="button" class="toggle-password" data-target="password">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Password Strength Meter -->
+                    <div class="strength-meter-box" id="strength-box">
+                        <div class="strength-bar-track">
+                            <div class="strength-bar-fill" id="strength-fill"></div>
+                        </div>
+                        <div class="strength-label-row">
+                            <span class="strength-text">Password Strength:</span>
+                            <span id="strength-label" style="font-weight: 700; color: var(--text-dim);">Enter password</span>
+                        </div>
+                        <div class="strength-rules-list">
+                            <div class="rule-item" id="rule-len"><i data-lucide="circle"></i> 8+ characters</div>
+                            <div class="rule-item" id="rule-upper"><i data-lucide="circle"></i> Uppercase (A-Z)</div>
+                            <div class="rule-item" id="rule-num"><i data-lucide="circle"></i> Number (0-9)</div>
+                            <div class="rule-item" id="rule-sym"><i data-lucide="circle"></i> Symbol (!@#$)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="check-circle-2" class="input-icon"></i>
+                        <input type="password" id="confirm-password" placeholder="Re-enter password" required autocomplete="new-password">
+                        <button type="button" class="toggle-password" data-target="confirm-password">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn btn-primary" style="margin-top: 14px;">
+                    <span>Create My Account</span>
+                    <i data-lucide="user-check"></i>
+                </button>
+            </form>
+
+            <div class="back-link-wrapper" style="margin-top: 24px;">
+                <span style="color: var(--text-dim); font-size: 14px;">Already have an account?</span>
+                <a href="login.html" class="text-link" style="font-weight: 600; margin-left: 6px;">Sign in</a>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="auth-helper.js"></script>
+    <script>
+        lucide.createIcons();
+
+        const pwdInput = document.getElementById('password');
+        const confirmPwdInput = document.getElementById('confirm-password');
+        const strengthFill = document.getElementById('strength-fill');
+        const strengthLabel = document.getElementById('strength-label');
+
+        const ruleLen = document.getElementById('rule-len');
+        const ruleUpper = document.getElementById('rule-upper');
+        const ruleNum = document.getElementById('rule-num');
+        const ruleSym = document.getElementById('rule-sym');
+
+        pwdInput.addEventListener('input', () => {
+            const val = pwdInput.value;
+            const res = evaluatePasswordStrength(val);
+
+            strengthFill.style.width = `${res.score}%`;
+            strengthFill.style.backgroundColor = res.color;
+            strengthLabel.textContent = val ? res.label : 'Enter password';
+            strengthLabel.style.color = res.color;
+
+            // Update Rules
+            updateRule(ruleLen, res.checks.length);
+            updateRule(ruleUpper, res.checks.uppercase);
+            updateRule(ruleNum, res.checks.number);
+            updateRule(ruleSym, res.checks.special);
+        });
+
+        function updateRule(el, isValid) {
+            const icon = el.querySelector('i');
+            if (isValid) {
+                el.classList.add('valid');
+                icon.setAttribute('data-lucide', 'check-circle');
+            } else {
+                el.classList.remove('valid');
+                icon.setAttribute('data-lucide', 'circle');
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // Form Submit
+        const form = document.getElementById('register-page-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const role = document.getElementById('role').value;
+            const password = pwdInput.value;
+            const confirmPassword = confirmPwdInput.value;
+
+            if (!name || !email || !password || !confirmPassword) {
+                showToast('Please fill out all required fields', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            setBtnLoading(submitBtn, true, 'Creating Account...');
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, role })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showToast(data.message || 'Registration failed', 'error');
+                    return;
+                }
+
+                showToast(`Account created as ${role.toUpperCase()}! Redirecting to login...`, 'success');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+
+            } catch (err) {
+                console.error(err);
+                showToast('Server connection error. Please try again.', 'error');
+            } finally {
+                setBtnLoading(submitBtn, false, 'Create My Account');
+            }
+        });
+    </script>
+</body>
+</html>
