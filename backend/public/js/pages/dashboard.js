@@ -72,15 +72,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabPanels = document.querySelectorAll('.dash-tab-panel');
 
     navButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
             const targetId = btn.getAttribute('data-target');
 
             navButtons.forEach(b => b.classList.remove('active'));
-            tabPanels.forEach(p => p.classList.add('d-none'));
+            tabPanels.forEach(p => {
+                p.classList.remove('active');
+                p.classList.remove('d-none');
+            });
 
             btn.classList.add('active');
             const panel = document.getElementById(targetId);
-            if (panel) panel.classList.remove('d-none');
+            if (panel) {
+                panel.classList.remove('d-none');
+                panel.classList.add('active');
+            }
 
             if (targetId === 'tab-security') {
                 loadSessionHistory();

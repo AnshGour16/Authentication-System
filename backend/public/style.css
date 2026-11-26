@@ -505,7 +505,7 @@ body {
 }
 
 .dash-tab-panel.active {
-  display: block;
+  display: block !important;
   animation: fadeIn 200ms ease-out;
 }
 
