@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "node backend/server.js",
+    "seed": "node backend/seed.js",
     "test": "cd backend && npm test"
   },
   "dependencies": {
